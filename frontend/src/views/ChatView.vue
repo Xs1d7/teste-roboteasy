@@ -1,27 +1,29 @@
 <template>
-  <div class="shell chat-shell">
-    <header class="topbar">
-      <div>
-        <button class="btn ghost back" @click="router.push('/users')">Voltar</button>
-        <div class="brand peer">{{ peerName }}</div>
-      </div>
+  <AppShell
+    shell-class="chat-shell"
+    topbar-class="chat-topbar"
+    :title="peerName"
+    title-class="peer"
+  >
+    <template #leading>
+      <button class="btn ghost back" type="button" @click="router.push('/users')">Voltar</button>
+    </template>
+    <template #trailing>
       <div class="meta">voce: {{ auth.username }}</div>
-    </header>
+    </template>
 
     <section class="panel thread">
       <div ref="scroller" class="messages">
         <p v-if="loading" class="empty">Carregando historico...</p>
         <p v-else-if="messages.length === 0" class="empty">Nenhuma mensagem ainda. Manda um oi.</p>
 
-        <div
+        <MessageBubble
           v-for="m in messages"
           :key="m.id + m.sentAt"
-          class="bubble"
-          :class="{ mine: isMine(m) }"
-        >
-          <div class="content">{{ m.content }}</div>
-          <div class="time">{{ formatTime(m.sentAt) }}</div>
-        </div>
+          :content="m.content"
+          :time="formatTime(m.sentAt)"
+          :mine="isMine(m)"
+        />
       </div>
 
       <form class="composer" @submit.prevent="enviar">
@@ -35,12 +37,14 @@
       </form>
       <p v-if="error" class="error pad">{{ error }}</p>
     </section>
-  </div>
+  </AppShell>
 </template>
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import AppShell from '../components/AppShell.vue'
+import MessageBubble from '../components/MessageBubble.vue'
 import { useAuthStore } from '../stores/auth'
 import { useChatStore } from '../stores/chat'
 import type { ChatMessage } from '../types/api'
@@ -131,15 +135,15 @@ async function enviar() {
 <style scoped>
 .chat-shell { max-width: 820px; }
 
-.topbar { align-items: flex-end; }
+:deep(.chat-topbar) { align-items: flex-end; }
+
+:deep(.peer) { margin-top: 0.15rem; }
 
 .back {
   margin-bottom: 0.45rem;
   padding: 0.35rem 0.7rem;
   font-size: 0.85rem;
 }
-
-.peer { margin-top: 0.15rem; }
 
 .thread {
   display: flex;
@@ -160,34 +164,6 @@ async function enviar() {
 .empty {
   color: var(--muted);
   margin: 1rem 0;
-}
-
-.bubble {
-  max-width: min(75%, 420px);
-  padding: 0.7rem 0.85rem;
-  border-radius: 12px;
-  background: var(--them);
-  border: 1px solid var(--line);
-  align-self: flex-start;
-}
-
-.bubble.mine {
-  align-self: flex-end;
-  background: var(--me);
-  border-color: #2f6d5d;
-}
-
-.content {
-  white-space: pre-wrap;
-  word-break: break-word;
-  line-height: 1.4;
-}
-
-.time {
-  margin-top: 0.35rem;
-  font-size: 0.72rem;
-  color: var(--muted);
-  text-align: right;
 }
 
 .composer {
