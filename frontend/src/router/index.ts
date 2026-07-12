@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import LoginView from '../views/LoginView.vue'
 import UsersView from '../views/UsersView.vue'
+import ChatView from '../views/ChatView.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -15,7 +16,8 @@ const router = createRouter({
   routes: [
     { path: '/', redirect: '/login' },
     { path: '/login', name: 'login', component: LoginView, meta: { guest: true } },
-    { path: '/users', name: 'users', component: UsersView, meta: { auth: true } }
+    { path: '/users', name: 'users', component: UsersView, meta: { auth: true } },
+    { path: '/chat/:userId', name: 'chat', component: ChatView, meta: { auth: true } }
   ]
 })
 
