@@ -1,0 +1,19 @@
+@auth = http://localhost:5001
+
+### Register
+POST {{auth}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "alice",
+  "password": "1234"
+}
+
+### Login
+POST {{auth}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "alice",
+  "password": "1234"
+}
