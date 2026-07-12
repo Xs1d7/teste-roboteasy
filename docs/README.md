@@ -105,6 +105,12 @@ cd frontend && npm install && npm run dev
 
 Vite em http://localhost:5173 (proxy para as APIs).
 
+## CI
+
+Workflow: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) — build .NET, testes (Mongo no job) e build do frontend.
+
+Comandos locais equivalentes: ver [README raiz](../README.md#ci).
+
 ## Enunciado original
 
 O texto completo do desafio esta em [DESAFIO.md](DESAFIO.md).

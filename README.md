@@ -42,3 +42,16 @@ dotnet test tests/Chat.Api.Tests
 ```
 
 Ver [docs/testes.md](docs/testes.md) (inclui `MONGO_TEST_URL` para integracao com Mongo).
+
+## CI
+
+GitHub Actions: [`.github/workflows/ci.yml`](.github/workflows/ci.yml) — build Auth/Chat, `dotnet test` (com Mongo) e `npm run build`.
+
+Local (equivalente):
+
+```bash
+dotnet build services/auth/Auth.Api.csproj
+dotnet build services/chat/Chat.Api.csproj
+dotnet test tests/Chat.Api.Tests
+cd frontend && npm ci && npm run build
+```
