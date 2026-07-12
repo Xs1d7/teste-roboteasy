@@ -9,6 +9,8 @@ docker compose up --build
 App: http://localhost:8080  
 RabbitMQ management (opcional): http://localhost:15672 — `guest` / `guest`
 
+Auth e Chat expoem `GET /health` (porta 8080 interna). O compose usa isso como healthcheck; o frontend so sobe depois dos dois APIs ficarem healthy.
+
 ## Teste rapido
 
 1. Abra http://localhost:8080
