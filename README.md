@@ -32,3 +32,11 @@ http://localhost:8080
 ## Stack
 
 Vue 3 · .NET 10 · PostgreSQL · MongoDB · RabbitMQ · SignalR
+
+## Testes
+
+```bash
+dotnet test tests/Chat.Api.Tests
+```
+
+Ver [docs/testes.md](docs/testes.md) (inclui `MONGO_TEST_URL` para integracao com Mongo).
