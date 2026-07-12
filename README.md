@@ -1,113 +1,34 @@
-# Roboteasy — chat em tempo real
+# Roboteasy
 
-Solucao do desafio full stack: auth JWT, usuarios online, mensagens via SignalR e historico no Mongo.
+Chat em tempo real — solucao do desafio full stack.
 
-## Como rodar
+Auth JWT, usuarios online, mensagens via SignalR e historico no Mongo. Dois servicos .NET (Auth + Chat), frontend Vue 3 + TypeScript, tudo sobe com Docker.
 
-Requisitos: Docker + Docker Compose.
+**Documentacao completa:** [docs/README.md](docs/README.md) (screenshots, arquitetura, como rodar)
+
+**Enunciado original:** [docs/DESAFIO.md](docs/DESAFIO.md)
+
+## Preview
+
+| Landing | Usuarios online | Conversa |
+|---------|-----------------|----------|
+| ![Landing](docs/screenshots/site-presentation.png) | ![Online](docs/screenshots/available-users.png) | ![Chat](docs/screenshots/chat.png) |
+
+## Rodar em 1 comando
 
 ```bash
 docker compose up --build
 ```
 
-Abra **http://localhost:8080**
+http://localhost:8080
 
-### Teste rapido
+## Entregue
 
-1. Cadastre o usuario A e entre
-2. Em outra aba anonima, cadastre o usuario B
-3. Veja os dois online e inicie uma conversa
+- Login/cadastro com JWT (Postgres)
+- Lista de quem esta conectado agora
+- Chat 1:1 com historico (Mongo + SignalR)
+- Docker Compose + nginx
 
-Mais detalhes: [docs/06-docker.md](docs/06-docker.md)
+## Stack
 
-## Arquitetura
-
-```
-Vue 3 + TS  --HTTP-->  Auth (.NET)  --> PostgreSQL
-           \--SignalR-->  Chat (.NET)  --> MongoDB
-                              |  ^
-                              v  |
-                           RabbitMQ
-```
-
-Documentacao do processo: [docs/](docs/)
-
----
-
-# **📌 Desafio Técnico – Desenvolvedor Full Stack**
-## **Objetivo**
-Criar um **chat em tempo real** com autenticação de usuários, listagem de usuários disponíveis e trocas de mensagens.
-
-## 📌 Como Participar
-1. **Fork** este repositório para a sua conta do GitHub.
-2. Desenvolva a solução no seu fork.
-3. Após finalizar, **abra um Pull Request (PR)** para este repositório.
-4. Aguarde o feedback da equipe.
-
-## **🎯 Requisitos do Desafio**
-
-### **1️⃣ Backend**
-Criar uma **API REST + WebSockets** utilizando **C# (.NET)** ou **Java (Spring Boot)** com as seguintes funcionalidades:
-- **Autenticação e Registro de Usuários**  
-  - Criar um endpoint para **login** e outro para **cadastro de usuários**.  
-  - Utilizar **JWT** para autenticação.  
-- **Listagem de Usuários Online**  
-  - Criar um endpoint que retorna os usuários conectados.  
-- **Mensagens em Tempo Real**  
-  - Implementar **WebSockets** para o envio e recebimento de mensagens.  
-  - Criar um **histórico de mensagens** (armazenar em MongoDB ou outro banco de sua escolha).  
-
----
-
-### **2️⃣ Frontend**
-Criar uma **aplicação web** utilizando **Vue.js** com três telas:
-- **Tela de Login**
-  - Input de **usuário e senha**.
-  - Botão para **cadastrar-se**.
-- **Tela de Usuários Disponíveis**
-  - Listagem dos usuários conectados.
-  - Clique no usuário para iniciar um chat.
-- **Tela de Conversa**
-  - Exibir **histórico de mensagens**.
-  - Permitir envio de mensagens em tempo real via **WebSockets**.
-
----
-
-### **3️⃣ Docker**
-Criar um **Dockerfile e um docker-compose.yml** para subir a aplicação de forma rápida.
-
-- O **backend** deve rodar no **.NET Core** ou **Spring Boot**.
-- O **frontend** deve rodar no Vue.js
-- Banco de dados pode ser **MongoDB, PostgreSQL ou outro**.
-- Criar um **arquivo README.md** com instruções para rodar o projeto.
-
----
-
-## **🛠 Tecnologias Sugeridas**
-### **Backend**
-✅ **C# com .NET Core** (ou) **Java 17+ com Spring Boot**  
-✅ **Autenticação com JWT**  
-✅ **WebSockets para mensagens em tempo real**  
-✅ **Banco de dados** (MongoDB, PostgreSQL, ou outro de sua escolha)  
-✅ **Docker para containerização**
-
-### **Frontend**
-✅ **Vue.js**  
-✅ **Consumo de APIs via Axios ou Fetch**  
-✅ **Uso de WebSockets para chat em tempo real**  
-
----
-
-## **📌 O que será avaliado?**
-✔ **Código bem estruturado e organizado**  
-✔ **Boas práticas de desenvolvimento** (Clean Code, SOLID, etc.)  
-✔ **Segurança na autenticação e API**  
-✔ **Uso correto de WebSockets**  
-✔ **Uso eficiente do banco de dados**  
-✔ **Documentação clara para rodar a aplicação**  
-
-
----
-
-## ** ⏳ Prazo **
-- **5** dias.
+Vue 3 · .NET 10 · PostgreSQL · MongoDB · RabbitMQ · SignalR
