@@ -1,9 +1,7 @@
 <template>
-  <main class="shell">
-    <p class="brand">Roboteasy</p>
-    <p class="meta">frontend bootstrap — proximas etapas: auth e chat</p>
-  </main>
+  <RouterView />
 </template>
 
 <script setup lang="ts">
+import { RouterView } from 'vue-router'
 </script>
