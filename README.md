@@ -1,3 +1,39 @@
+# Roboteasy — chat em tempo real
+
+Solucao do desafio full stack: auth JWT, usuarios online, mensagens via SignalR e historico no Mongo.
+
+## Como rodar
+
+Requisitos: Docker + Docker Compose.
+
+```bash
+docker compose up --build
+```
+
+Abra **http://localhost:8080**
+
+### Teste rapido
+
+1. Cadastre o usuario A e entre
+2. Em outra aba anonima, cadastre o usuario B
+3. Veja os dois online e inicie uma conversa
+
+Mais detalhes: [docs/06-docker.md](docs/06-docker.md)
+
+## Arquitetura
+
+```
+Vue 3 + TS  --HTTP-->  Auth (.NET)  --> PostgreSQL
+           \--SignalR-->  Chat (.NET)  --> MongoDB
+                              |  ^
+                              v  |
+                           RabbitMQ
+```
+
+Documentacao do processo: [docs/](docs/)
+
+---
+
 # **📌 Desafio Técnico – Desenvolvedor Full Stack**
 ## **Objetivo**
 Criar um **chat em tempo real** com autenticação de usuários, listagem de usuários disponíveis e trocas de mensagens.
