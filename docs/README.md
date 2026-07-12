@@ -60,7 +60,7 @@ Documentacao do processo:
 
 - [Entendimento](01-entendimento.md)
 - [Arquitetura](02-arquitetura.md)
-- [Auth](03-auth.md) · [Chat](04-chat.md) · [Frontend](05-frontend.md) · [Docker](06-docker.md)
+- [Auth](03-auth.md) · [Chat](04-chat.md) · [Frontend](05-frontend.md) · [Docker](06-docker.md) · [Testes](testes.md)
 
 ## Como rodar
 
