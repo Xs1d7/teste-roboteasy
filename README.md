@@ -6,6 +6,8 @@ Auth JWT, usuarios online, mensagens via SignalR e historico no Mongo. Dois serv
 
 **Documentacao completa:** [docs/README.md](docs/README.md) (screenshots, arquitetura, como rodar)
 
+**Visao de evolucao com IA:** [docs/07-evolucao-ia.md](docs/07-evolucao-ia.md) (doc only, fora do escopo do codigo)
+
 **Enunciado original:** [docs/DESAFIO.md](docs/DESAFIO.md)
 
 ## Preview
