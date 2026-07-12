@@ -13,4 +13,6 @@ Rodar local (precisa do Postgres no ar):
 dotnet run --project services/auth --urls http://localhost:5001
 ```
 
+Swagger UI (so em Development): http://localhost:5001/swagger
+
 Proximo passo: Chat (SignalR + Mongo + Rabbit).
