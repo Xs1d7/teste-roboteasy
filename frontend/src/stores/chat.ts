@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import * as signalR from '@microsoft/signalr'
 import axios from 'axios'
 import { useAuthStore } from './auth'
@@ -10,26 +10,97 @@ import {
   maybeNotifyIncoming
 } from '../lib/notifications'
 
+function normId(id: string | number): string {
+  return String(id).toLowerCase()
+}
+
 export const useChatStore = defineStore('chat', () => {
   const connection = ref<signalR.HubConnection | null>(null)
   const online = ref<OnlineUser[]>([])
   const connected = ref(false)
-  /** Conversa aberta agora (para nao notificar se ja esta olhando). */
+  /** Conversa aberta agora. */
   const activePeerId = ref<string | null>(null)
+  /** Contagem de nao lidas por userId (lowercase). */
+  const unreadByUser = ref<Record<string, number>>({})
+  /** Ultima mensagem recebida (preview na lista). */
+  const lastPreviewByUser = ref<Record<string, string>>({})
   const notificationPermission = ref(currentPermission())
+
+  const totalUnread = computed(() =>
+    Object.values(unreadByUser.value).reduce((a, n) => a + n, 0)
+  )
+
+  function syncDocumentTitle() {
+    const n = totalUnread.value
+    document.title = n > 0 ? `(${n}) Roboteasy` : 'Roboteasy'
+  }
 
   function setActivePeer(userId: string | null) {
     activePeerId.value = userId
+    if (userId) markRead(userId)
+  }
+
+  function markRead(userId: string) {
+    const key = normId(userId)
+    if (!unreadByUser.value[key]) return
+    const next = { ...unreadByUser.value }
+    delete next[key]
+    unreadByUser.value = next
+    syncDocumentTitle()
+  }
+
+  function unreadCount(userId: string): number {
+    return unreadByUser.value[normId(userId)] ?? 0
+  }
+
+  function lastPreview(userId: string): string {
+    return lastPreviewByUser.value[normId(userId)] ?? ''
+  }
+
+  function registerIncoming(msg: ChatMessage) {
+    const auth = useAuthStore()
+    if (!auth.userId) return
+
+    const me = normId(auth.userId)
+    const from = normId(msg.fromUserId)
+    const to = normId(msg.toUserId)
+
+    if (from === me) return
+    if (to !== me) return
+
+    const viewing =
+      activePeerId.value != null &&
+      from === normId(activePeerId.value)
+
+    if (viewing) return
+
+    unreadByUser.value = {
+      ...unreadByUser.value,
+      [from]: (unreadByUser.value[from] ?? 0) + 1
+    }
+    lastPreviewByUser.value = {
+      ...lastPreviewByUser.value,
+      [from]: msg.content.trim()
+    }
+    syncDocumentTitle()
+    maybeNotifyIncoming(msg, auth.userId, activePeerId.value)
   }
 
   async function enableNotifications() {
     notificationPermission.value = await ensureNotificationPermission()
+    return notificationPermission.value
+  }
+
+  function refreshNotificationPermission() {
+    notificationPermission.value = currentPermission()
   }
 
   async function connect() {
     const auth = useAuthStore()
     if (!auth.token) return
     if (connection.value) return
+
+    refreshNotificationPermission()
 
     const hub = new signalR.HubConnectionBuilder()
       .withUrl('/hubs/chat', {
@@ -47,7 +118,7 @@ export const useChatStore = defineStore('chat', () => {
     })
 
     hub.on('ReceiveMessage', (msg: ChatMessage) => {
-      maybeNotifyIncoming(msg, auth.userId, activePeerId.value)
+      registerIncoming(msg)
     })
 
     hub.onclose(() => { connected.value = false })
@@ -60,11 +131,6 @@ export const useChatStore = defineStore('chat', () => {
     connection.value = hub
     connected.value = true
     await refreshOnline()
-
-    // pede permissao na primeira conexao (se ainda default)
-    if (notificationPermission.value === 'default') {
-      void enableNotifications()
-    }
   }
 
   async function refreshOnline() {
@@ -107,12 +173,18 @@ export const useChatStore = defineStore('chat', () => {
     connected.value = false
     online.value = []
     activePeerId.value = null
+    unreadByUser.value = {}
+    lastPreviewByUser.value = {}
+    syncDocumentTitle()
   }
 
   return {
     online,
     connected,
     activePeerId,
+    unreadByUser,
+    lastPreviewByUser,
+    totalUnread,
     notificationPermission,
     connect,
     disconnect,
@@ -121,6 +193,10 @@ export const useChatStore = defineStore('chat', () => {
     sendMessage,
     onMessage,
     setActivePeer,
-    enableNotifications
+    markRead,
+    unreadCount,
+    lastPreview,
+    enableNotifications,
+    refreshNotificationPermission
   }
 })
