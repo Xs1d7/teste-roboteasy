@@ -35,11 +35,15 @@ Obs: precisei setar Guid como string no BSON — o driver 3.x reclama se deixar 
 
 ## Escala (ponto critico)
 
-Presenca e SignalR usam **Redis** quando `ConnectionStrings:Redis` esta configurado (padrao no compose):
+Com `ConnectionStrings:Redis` (padrao no compose):
 
 - backplane SignalR (`AddStackExchangeRedis`)
-- `RedisPresenceTracker` para online compartilhado entre instancias
+- `RedisPresenceTracker` com **TTL 60s** por conexao
+- heartbeat a cada **20s** (`PresenceHeartbeatService` + filtro no hub)
+- prune de conexoes expiradas (pod morto sem disconnect)
 
-Sem Redis (dev/teste): fallback `PresenceTracker` in-memory.
+Compose sobe **duas replicas** (`chat-a`, `chat-b`); nginx faz **sticky** com `ip_hash`.
+
+Sem Redis: fallback `PresenceTracker` in-memory.
 
 Ver [02-arquitetura.md](02-arquitetura.md#escala-horizontal--ponto-critico).

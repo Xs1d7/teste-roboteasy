@@ -55,11 +55,13 @@ Com o site aberto na lista (sem chat aberto), novas mensagens aparecem com badge
 
 ```
 Vue 3 + TS  --HTTP-->  Auth (.NET)  --> PostgreSQL
-           \--SignalR-->  Chat (.NET)  --> MongoDB
-                              |  ^
+           \--SignalR-->  Chat-a / Chat-b (.NET)  --> MongoDB
+                              |  ^                      Redis (backplane + presenca TTL)
                               v  |
                            RabbitMQ
 ```
+
+nginx faz sticky (`ip_hash`) entre as duas replicas do Chat.
 
 Diagrama detalhado: [roboteasy-diagram.excalidraw](roboteasy-diagram.excalidraw) (abrir no [Excalidraw](https://excalidraw.com/)).
 

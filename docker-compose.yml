@@ -1,3 +1,28 @@
+x-chat-env: &chat-env
+  ASPNETCORE_ENVIRONMENT: Production
+  ConnectionStrings__Mongo: mongodb://mongo:27017
+  ConnectionStrings__RabbitMQ: amqp://guest:guest@rabbitmq:5672
+  ConnectionStrings__Redis: redis:6379
+  Mongo__Database: roboteasy_chat
+  Jwt__Key: roboteasy-dev-secret-key-change-me-32chars!
+  Jwt__Issuer: roboteasy-auth
+  Jwt__Audience: roboteasy
+
+x-chat-depends: &chat-depends
+  mongo:
+    condition: service_healthy
+  rabbitmq:
+    condition: service_healthy
+  redis:
+    condition: service_healthy
+
+x-chat-health: &chat-health
+  test: ["CMD-SHELL", "curl -fsS http://localhost:8080/health || exit 1"]
+  interval: 5s
+  timeout: 5s
+  retries: 12
+  start_period: 30s
+
 services:
   postgres:
     image: postgres:16-alpine
@@ -59,30 +84,24 @@ services:
       retries: 12
       start_period: 30s
 
-  chat:
+  # Duas replicas do Chat — Redis backplane + nginx ip_hash (sticky)
+  chat-a:
     build: ./services/chat
     environment:
-      ASPNETCORE_ENVIRONMENT: Production
-      ConnectionStrings__Mongo: mongodb://mongo:27017
-      ConnectionStrings__RabbitMQ: amqp://guest:guest@rabbitmq:5672
-      ConnectionStrings__Redis: redis:6379
-      Mongo__Database: roboteasy_chat
-      Jwt__Key: roboteasy-dev-secret-key-change-me-32chars!
-      Jwt__Issuer: roboteasy-auth
-      Jwt__Audience: roboteasy
+      <<: *chat-env
     depends_on:
-      mongo:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+      <<: *chat-depends
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/health || exit 1"]
-      interval: 5s
-      timeout: 5s
-      retries: 12
-      start_period: 30s
+      <<: *chat-health
+
+  chat-b:
+    build: ./services/chat
+    environment:
+      <<: *chat-env
+    depends_on:
+      <<: *chat-depends
+    healthcheck:
+      <<: *chat-health
 
   frontend:
     build: ./frontend
@@ -91,7 +110,9 @@ services:
     depends_on:
       auth:
         condition: service_healthy
-      chat:
+      chat-a:
+        condition: service_healthy
+      chat-b:
         condition: service_healthy
 
 volumes:

@@ -53,6 +53,19 @@ O `startup_script` instala Docker, clona o repo e sobe o compose. Primeira subid
 
 Auth e Frontend escalam horizontalmente sem mudanca de codigo.
 
-**Ponto critico (identificado e resolvido no codigo):** Chat + SignalR. O compose sobe **Redis**; o Chat usa backplane SignalR + `RedisPresenceTracker`. Em AWS/GCP: ElastiCache / Memorystore + sticky no LB.
+**Chat (implementado no compose + codigo):**
+
+| Peca | Como |
+|------|------|
+| 2 replicas | `chat-a` + `chat-b` no `docker-compose.yml` |
+| Sticky | nginx `ip_hash` → mesmo cliente no mesmo pod |
+| Redis backplane | SignalR `AddStackExchangeRedis` |
+| Presenca Redis + TTL 60s | `RedisPresenceTracker` + heartbeat a cada 20s |
+| RabbitMQ | eventos entre qualquer replica |
+
+**Nuvem (quando sair da VM unica):** ElastiCache / Memorystore + sticky no ALB / Cloud LB — ver exemplos:
+
+- [`infra/aws/sticky-alb.example.tf`](aws/sticky-alb.example.tf)
+- [`infra/gcp/sticky-lb.example.tf`](gcp/sticky-lb.example.tf)
 
 Detalhe: [docs/02-arquitetura.md](../docs/02-arquitetura.md#escala-horizontal--ponto-critico).

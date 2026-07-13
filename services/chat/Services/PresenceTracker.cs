@@ -47,4 +47,9 @@ public class PresenceTracker : IPresenceTracker
             .OrderBy(u => u.Username)
             .ToList();
     }
+
+    public void Heartbeat(string connectionId)
+    {
+        // in-memory: nada a renovar
+    }
 }

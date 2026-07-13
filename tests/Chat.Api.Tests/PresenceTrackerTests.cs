@@ -35,4 +35,14 @@ public class PresenceTrackerTests
         Assert.Single(online);
         Assert.Equal(b.UserId, online[0].UserId);
     }
+
+    [Fact]
+    public void Heartbeat_in_memory_nao_quebra()
+    {
+        var tracker = new PresenceTracker();
+        var user = new OnlineUser(Guid.NewGuid(), "z");
+        tracker.TryAdd("c1", user);
+        tracker.Heartbeat("c1");
+        Assert.Single(tracker.GetOnline());
+    }
 }

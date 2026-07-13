@@ -40,6 +40,9 @@ builder.Services.AddSwaggerGen(opt =>
     });
 });
 builder.Services.AddSingleton<MessageStore>();
+builder.Services.AddSingleton<PresenceConnectionRegistry>();
+builder.Services.AddSingleton<PresenceHeartbeatFilter>();
+builder.Services.AddHostedService<PresenceHeartbeatService>();
 builder.Services.AddSingleton(sp =>
 {
     var cfg = sp.GetRequiredService<IConfiguration>();
@@ -55,6 +58,7 @@ if (!string.IsNullOrWhiteSpace(redisCs))
     builder.Services.AddSingleton<IPresenceTracker, RedisPresenceTracker>();
     builder.Services
         .AddSignalR()
+        .AddHubOptions<ChatHub>(o => o.AddFilter<PresenceHeartbeatFilter>())
         .AddStackExchangeRedis(redisCs, opt =>
         {
             opt.Configuration.ChannelPrefix = RedisChannel.Literal("roboteasy-signalr");
@@ -63,7 +67,9 @@ if (!string.IsNullOrWhiteSpace(redisCs))
 else
 {
     builder.Services.AddSingleton<IPresenceTracker, PresenceTracker>();
-    builder.Services.AddSignalR();
+    builder.Services
+        .AddSignalR()
+        .AddHubOptions<ChatHub>(o => o.AddFilter<PresenceHeartbeatFilter>());
 }
 
 builder.Services.AddSingleton<IUserIdProvider, NameIdProvider>();

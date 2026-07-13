@@ -78,11 +78,10 @@ O gargalo e o **Chat + SignalR**. Sem store compartilhado, presenca e conexoes W
 
 | Medida | No codigo / compose |
 |--------|---------------------|
-| **Redis backplane** (SignalR) | `AddStackExchangeRedis` quando `ConnectionStrings:Redis` esta setado |
-| **Presenca no Redis** | `RedisPresenceTracker` (fallback in-memory se Redis ausente) |
-| **RabbitMQ** | Ja desacoplava publish/consume entre instancias |
-| Sticky session no LB | Complementar em AWS/GCP (ALB / Cloud LB) — nao substitui Redis |
-
-No `docker compose` o servico **redis** sobe junto com o Chat. Em nuvem: ElastiCache (AWS) ou Memorystore (GCP).
+| **Redis backplane** (SignalR) | `AddStackExchangeRedis` |
+| **Presenca Redis + TTL 60s** | `RedisPresenceTracker` + heartbeat 20s (pod morto some sozinho) |
+| **2 replicas Chat** | `chat-a` + `chat-b` |
+| **Sticky** | nginx `ip_hash` (local); exemplos ALB / Cloud LB em `infra/` |
+| **RabbitMQ** | publish/consume entre qualquer replica |
 
 Detalhe: [docs/02-arquitetura.md](docs/02-arquitetura.md#escala-horizontal--ponto-critico).

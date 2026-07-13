@@ -7,7 +7,11 @@ using Microsoft.AspNetCore.SignalR;
 namespace Chat.Api.Hubs;
 
 [Authorize]
-public class ChatHub(IPresenceTracker presence, MessageStore store, EventBus bus) : Hub
+public class ChatHub(
+    IPresenceTracker presence,
+    PresenceConnectionRegistry connections,
+    MessageStore store,
+    EventBus bus) : Hub
 {
     public override async Task OnConnectedAsync()
     {
@@ -17,6 +21,8 @@ public class ChatHub(IPresenceTracker presence, MessageStore store, EventBus bus
             Context.Abort();
             return;
         }
+
+        connections.Register(Context.ConnectionId);
 
         if (presence.TryAdd(Context.ConnectionId, user))
         {
@@ -34,6 +40,8 @@ public class ChatHub(IPresenceTracker presence, MessageStore store, EventBus bus
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
+        connections.Unregister(Context.ConnectionId);
+
         if (presence.TryRemove(Context.ConnectionId, out var user) && user is not null)
         {
             await bus.PublishAsync(new ChatEvent
