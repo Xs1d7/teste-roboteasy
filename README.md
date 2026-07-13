@@ -27,6 +27,7 @@ http://localhost:8080
 ## Entregue
 
 - Login/cadastro com JWT (Postgres)
+- Avatar de perfil (MinIO local / S3-compativel em prod)
 - Lista de quem esta conectado agora
 - Chat 1:1 com historico (Mongo + SignalR)
 - Indicador de mensagens nao lidas (badge + preview na lista)
@@ -35,7 +36,7 @@ http://localhost:8080
 
 ## Stack
 
-Vue 3 · Tailwind · shadcn-vue · .NET 10 · PostgreSQL · MongoDB · RabbitMQ · Redis · SignalR
+Vue 3 · Tailwind · shadcn-vue · .NET 10 · PostgreSQL · MongoDB · RabbitMQ · Redis · SignalR · MinIO (S3)
 
 ## Arquitetura
 
@@ -43,11 +44,12 @@ Vue 3 · Tailwind · shadcn-vue · .NET 10 · PostgreSQL · MongoDB · RabbitMQ 
 flowchart LR
   Browser[Browser] --> Nginx[nginx]
 
-  Nginx -->|auth| Auth[Auth]
+  Nginx -->|auth / avatar| Auth[Auth]
   Nginx -->|chat / hub| ChatA[chat-a]
   Nginx -->|chat / hub| ChatB[chat-b]
 
   Auth --> Postgres[(Postgres)]
+  Auth -->|Put/Get object| MinIO[(MinIO)]
   ChatA --> Mongo[(Mongo)]
   ChatB --> Mongo
   ChatA --> Rabbit[(RabbitMQ)]
@@ -56,7 +58,7 @@ flowchart LR
   ChatB --> Redis
 ```
 
-AWS, GCP e o fluxo de uma mensagem: [docs/diagrams-mermaid.md](docs/diagrams-mermaid.md).
+AWS, GCP e o fluxo de uma mensagem / avatar: [docs/diagrams-mermaid.md](docs/diagrams-mermaid.md).
 
 ## Testes
 

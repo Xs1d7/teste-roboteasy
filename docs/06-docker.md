@@ -11,22 +11,23 @@ docker compose up --build -d --remove-orphans
 App: http://localhost:8080  
 Swagger Auth: http://localhost:5001/swagger  
 Swagger Chat (`chat-a`): http://localhost:5002/swagger  
+MinIO console: http://localhost:9001 — `admin` / `password123`  
 RabbitMQ management (opcional): http://localhost:15672 — `guest` / `guest`
 
 ## O que sobe
 
 | Servico | Papel |
 |---------|--------|
-| postgres | Auth (usuarios) |
+| postgres | Auth (usuarios + AvatarKey) |
 | mongo | Historico de mensagens |
 | rabbitmq | Eventos message / presence |
 | redis | Backplane SignalR + presenca (TTL 60s) |
-| auth | API JWT |
+| minio | Object storage S3-compativel (avatars) |
+| auth | API JWT + upload/proxy de avatar |
 | **chat-a**, **chat-b** | Duas instancias do Chat (mesma imagem) |
 | frontend | SPA + nginx (proxy + **sticky** `ip_hash`) |
 
-Healthchecks: Auth, chat-a e chat-b precisam ficar healthy antes do frontend.
-
+Healthchecks: Auth (depois do MinIO), chat-a e chat-b precisam ficar healthy antes do frontend.
 ### Por que 2 chats + Redis + sticky
 
 1. **Sticky (`ip_hash`)** — o mesmo browser tende a cair sempre no mesmo pod (WebSocket estavel)
@@ -56,9 +57,8 @@ docker compose ps
 So a infra (inclui Redis — o Chat em `appsettings.json` aponta pra `localhost:6379`):
 
 ```bash
-docker compose up postgres mongo rabbitmq redis -d
+docker compose up postgres mongo rabbitmq redis minio -d
 ```
-
 APIs (uma instancia de Chat e suficiente em dev; sem Redis, cai no tracker in-memory):
 
 ```bash

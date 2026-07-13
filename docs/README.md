@@ -33,38 +33,41 @@ Com o site aberto na lista (sem chat aberto), novas mensagens aparecem com badge
 | Requisito | Como foi feito |
 |-----------|----------------|
 | Login / cadastro + JWT | `services/auth` — Postgres, BCrypt, Bearer token |
+| Avatar de perfil | Upload via Auth → MinIO (S3 SDK); proxy `GET /api/users/avatar/{key}` |
 | Usuarios online | SignalR + **Redis** (`RedisPresenceTracker`, TTL 60s); 2 replicas `chat-a`/`chat-b` |
 | Mensagens realtime | Hub `/hubs/chat`, RabbitMQ + **Redis backplane** SignalR |
 | Historico | MongoDB, filtro por par de usuarios |
-| Frontend Vue (3 telas) | Login, lista online, conversa (+ landing) |
+| Frontend Vue (3 telas) | Login (+ passo opcional de avatar), lista online, conversa (+ landing) |
 | Mensagens nao lidas | Badge + preview na lista; titulo `(N) Roboteasy`; Notification API opcional |
 | Escala do Chat | nginx `ip_hash` (sticky) + Redis; ver [06-docker.md](06-docker.md) |
-| Docker | `docker compose up --build` sobe tudo (inclui redis + 2 chats) |
+| Docker | `docker compose up --build` sobe tudo (inclui redis, minio + 2 chats) |
 
 ## Stack
 
 | Camada | Tecnologia |
 |--------|------------|
 | Frontend | Vue 3, TypeScript, Pinia, Vue Router, SignalR, Tailwind + shadcn-vue |
-| Auth | .NET 10, EF Core, PostgreSQL |
+| Auth | .NET 10, EF Core, PostgreSQL, AWSSDK.S3 (MinIO / S3) |
 | Chat | .NET 10, SignalR, MongoDB, RabbitMQ, Redis (presenca + backplane) |
-| Infra | Docker Compose, nginx (proxy + sticky `ip_hash` para o Chat) |
+| Infra | Docker Compose, nginx (proxy + sticky `ip_hash` para o Chat), MinIO |
 
 ## Arquitetura
 
+```mermaid
+flowchart LR
+  Browser[Vue 3 + TS] --> Nginx[nginx]
+
+  Nginx -->|HTTP auth / avatar| Auth[Auth .NET]
+  Nginx -->|SignalR / chat| Chat[Chat-a / Chat-b]
+
+  Auth --> Postgres[(PostgreSQL)]
+  Auth --> MinIO[(MinIO)]
+  Chat --> Mongo[(MongoDB)]
+  Chat --> Rabbit[(RabbitMQ)]
+  Chat --> Redis[(Redis)]
 ```
-Vue 3 + TS  --HTTP-->  Auth (.NET)  --> PostgreSQL
-           \--SignalR-->  Chat-a / Chat-b (.NET)  --> MongoDB
-                              |  ^                      Redis (backplane + presenca TTL)
-                              v  |
-                           RabbitMQ
-```
 
-nginx faz sticky (`ip_hash`) entre as duas replicas do Chat.
-
-Diagrama Excalidraw legado: [roboteasy-diagram.excalidraw](roboteasy-diagram.excalidraw).
-
-Mermaids atualizados (local / AWS / GCP / sequência): [diagrams-mermaid.md](diagrams-mermaid.md) — colar no [Excalidraw](https://excalidraw.com/) (Insert → Mermaid).
+nginx faz sticky (`ip_hash`) entre as duas replicas do Chat. Variantes AWS/GCP e fluxos de mensagem/avatar: [diagrams-mermaid.md](diagrams-mermaid.md).
 
 Escala do Chat (Redis, 2 replicas, sticky): [06-docker.md](06-docker.md) e a secao no [README raiz](../README.md#escala-horizontal--ponto-critico-que-identifiquei).
 
