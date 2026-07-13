@@ -35,12 +35,13 @@ Com o site aberto na lista (sem chat aberto), novas mensagens aparecem com badge
 | Requisito | Como foi feito |
 |-----------|----------------|
 | Login / cadastro + JWT | `services/auth` — Postgres, BCrypt, Bearer token |
-| Usuarios online | SignalR + presenca in-memory no Chat |
-| Mensagens realtime | Hub `/hubs/chat`, RabbitMQ entre publish/consume |
+| Usuarios online | SignalR + **Redis** (`RedisPresenceTracker`, TTL 60s); 2 replicas `chat-a`/`chat-b` |
+| Mensagens realtime | Hub `/hubs/chat`, RabbitMQ + **Redis backplane** SignalR |
 | Historico | MongoDB, filtro por par de usuarios |
 | Frontend Vue (3 telas) | Login, lista online, conversa (+ landing) |
 | Mensagens nao lidas | Badge + preview na lista; titulo `(N) Roboteasy`; Notification API opcional |
-| Docker | `docker compose up --build` sobe tudo |
+| Escala do Chat | nginx `ip_hash` (sticky) + Redis; ver [02-arquitetura.md](02-arquitetura.md#escala-horizontal--ponto-critico) |
+| Docker | `docker compose up --build` sobe tudo (inclui redis + 2 chats) |
 
 ## Stack
 
@@ -49,7 +50,7 @@ Com o site aberto na lista (sem chat aberto), novas mensagens aparecem com badge
 | Frontend | Vue 3, TypeScript, Pinia, Vue Router, SignalR client |
 | Auth | .NET 10, EF Core, PostgreSQL |
 | Chat | .NET 10, SignalR, MongoDB, RabbitMQ, Redis (presenca + backplane) |
-| Infra | Docker Compose, nginx (proxy unico) |
+| Infra | Docker Compose, nginx (proxy + sticky `ip_hash` para o Chat) |
 
 ## Arquitetura
 

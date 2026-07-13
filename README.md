@@ -30,6 +30,7 @@ http://localhost:8080
 - Lista de quem esta conectado agora
 - Chat 1:1 com historico (Mongo + SignalR)
 - Indicador de mensagens nao lidas (badge + preview na lista)
+- Chat escalavel: Redis (backplane + presenca TTL) + **2 replicas** (`chat-a`/`chat-b`) + sticky nginx
 - Docker Compose + nginx
 
 ## Stack
@@ -68,13 +69,13 @@ Infra declarada em [`infra/`](infra/README.md):
 
 Auth e Frontend sao **stateless**: sobem N replicas sem drama (ECS / Cloud Run).
 
-O gargalo e o **Chat + SignalR**. Sem store compartilhado, presenca e conexoes WebSocket ficam **so na memoria do processo**. Com 2+ instancias:
+O gargalo e o **Chat + SignalR**. Sem store compartilhado, presenca e conexoes WebSocket ficariam **so na memoria do processo**. Com 2+ instancias isso quebraria:
 
-1. Usuario A conecta no pod 1, B no pod 2
-2. `Clients.User(...)` no pod 1 **nao ve** a conexao do B no pod 2
-3. Online/offline fica inconsistente entre pods
+1. Usuario A no pod 1, B no pod 2
+2. `Clients.User(...)` no pod 1 nao veria B
+3. Online/offline inconsistente
 
-**O que implementei para resolver:**
+**Isso ja esta resolvido no compose atual** (nao e so plano):
 
 | Medida | No codigo / compose |
 |--------|---------------------|

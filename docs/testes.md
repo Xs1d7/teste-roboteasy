@@ -45,11 +45,11 @@ Copie `.env.example` para `.env` e ajuste. O `.env` nao sobe no git; use-o so na
 | Arquivo | Tipo | Depende de Mongo? |
 |---------|------|-------------------|
 | `ChatMessageSerializationTests` | Unit | Nao — regressao Guid no BSON |
-| `PresenceTrackerTests` | Unit | Nao — multi-aba / online |
+| `PresenceTrackerTests` | Unit | Nao — multi-aba / online (**in-memory**; Redis e coberto no compose, nao nestes unitarios) |
 | `MessageStoreTests` | Integracao | Sim — save + busca conversa |
 
 Se `MONGO_TEST_URL` nao estiver setada, `MessageStoreTests` retorna sem falhar (unitarios ja cobrem o bug critico do Guid).
 
-## CI (futuro)
+## CI
 
-No GitHub Actions, o job sobe service `mongo:7` e exporta `MONGO_TEST_URL=mongodb://localhost:27017` antes do `dotnet test`.
+No GitHub Actions (`.github/workflows/ci.yml`), o job sobe service `mongo:7` e exporta `MONGO_TEST_URL` antes do `dotnet test`.

@@ -19,7 +19,11 @@ Quando o usuario esta na lista (sem chat aberto) e recebe mensagem:
 
 Ao abrir a conversa, marca como lida.
 
-## Notificacoes do sistema (opcional)
+## Proxy (Docker)
 
-Botao **Ativar notificacoes** so aparece se a permissao ainda e `default`.
-Se o navegador bloqueou, a lista de nao lidas continua funcionando — e o feedback diz isso.
+No container, o `nginx.conf` faz:
+
+- `/api/auth`, `/api/users` → Auth
+- `/api/messages`, `/api/users/online`, `/hubs/` → upstream **chat-a + chat-b** com `ip_hash` (sticky)
+
+Assim o WebSocket nao salta de replica no meio da sessao; Redis cobre o cruzamento entre pods.

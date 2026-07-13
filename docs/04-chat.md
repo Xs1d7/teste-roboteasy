@@ -1,6 +1,8 @@
 # Chat — status
 
-Hub SignalR + historico Mongo + eventos RabbitMQ.
+Hub SignalR + historico Mongo + eventos RabbitMQ + **Redis** (backplane e presenca).
+
+No Docker Compose ha **duas replicas**: `chat-a` e `chat-b` (nginx faz sticky).
 
 ## REST (Swagger)
 

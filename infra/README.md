@@ -2,9 +2,17 @@
 
 Declaracoes para subir o stack Roboteasy em **Google Cloud** e **AWS**.
 
-Estrategia escolhida para o desafio: **uma VM por cloud** rodando o `docker compose` existente (Auth, Chat, Frontend, Postgres, Mongo, RabbitMQ). Isso reproduz o ambiente local sem reescrever a arquitetura.
+Estrategia escolhida para o desafio: **uma VM por cloud** rodando o `docker compose` do repo.
 
-Em producao eu separaria em servicos gerenciados (Cloud Run / ECS + Cloud SQL / RDS + Mongo Atlas + Amazon MQ) — ver notas no final.
+O compose **ja inclui** escala do Chat no host:
+
+- `redis` + `chat-a` + `chat-b`
+- nginx com sticky (`ip_hash`)
+- presenca Redis com TTL/heartbeat
+
+Ou seja: mesmo na VM unica do Terraform, o stack demonstra **N processos de Chat** cooperando via Redis — nao e um unico container de chat.
+
+Em producao “gerenciada” eu separaria em Cloud Run / ECS + Cloud SQL / RDS + Mongo Atlas + Amazon MQ / CloudAMQP + ElastiCache / Memorystore — ver notas no final.
 
 | Pasta | Cloud | Recursos principais |
 |-------|-------|---------------------|
