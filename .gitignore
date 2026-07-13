@@ -22,3 +22,23 @@ npm-debug.log*
 !.env.example
 
 *.log
+
+# Planos / notas locais (nao sobem no PR)
+plano-local.md
+*.local.md
+.local/
+
+# Terraform
+**/.terraform/
+**/*.tfstate
+**/*.tfstate.*
+**/*.tfvars
+!**/*.tfvars.example
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc

@@ -56,3 +56,10 @@ dotnet build services/chat/Chat.Api.csproj
 dotnet test tests/Chat.Api.Tests
 cd frontend && npm ci && npm run build
 ```
+
+## Deploy (Terraform)
+
+Infra declarada em [`infra/`](infra/README.md):
+
+- [Google Cloud](infra/gcp/) — Compute Engine + Docker Compose
+- [AWS](infra/aws/) — EC2 + VPC + Elastic IP + Docker Compose

@@ -69,6 +69,7 @@ Documentacao do processo:
 - [Arquitetura](02-arquitetura.md)
 - [Auth](03-auth.md) · [Chat](04-chat.md) · [Frontend](05-frontend.md) · [Docker](06-docker.md) · [Testes](testes.md)
 - [Evolucao com IA](07-evolucao-ia.md) — visao de arquiteto (nao implementado)
+- [Deploy Terraform](../infra/README.md) — GCP (Compute Engine) e AWS (EC2)
 
 ## Como rodar
 
