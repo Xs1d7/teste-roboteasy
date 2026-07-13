@@ -48,7 +48,7 @@ Com o site aberto na lista (sem chat aberto), novas mensagens aparecem com badge
 |--------|------------|
 | Frontend | Vue 3, TypeScript, Pinia, Vue Router, SignalR client |
 | Auth | .NET 10, EF Core, PostgreSQL |
-| Chat | .NET 10, SignalR, MongoDB, RabbitMQ |
+| Chat | .NET 10, SignalR, MongoDB, RabbitMQ, Redis (presenca + backplane) |
 | Infra | Docker Compose, nginx (proxy unico) |
 
 ## Arquitetura
@@ -62,6 +62,8 @@ Vue 3 + TS  --HTTP-->  Auth (.NET)  --> PostgreSQL
 ```
 
 Diagrama detalhado: [roboteasy-diagram.excalidraw](roboteasy-diagram.excalidraw) (abrir no [Excalidraw](https://excalidraw.com/)).
+
+**Escala:** Auth/FE horizontais; Chat + SignalR usa **Redis** (backplane + presenca) — ver [02-arquitetura.md](02-arquitetura.md#escala-horizontal--ponto-critico).
 
 Documentacao do processo:
 

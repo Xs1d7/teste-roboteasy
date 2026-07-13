@@ -32,3 +32,14 @@ Autenticacao: JWT via query `?access_token={token}` (WebSocket nao envia header 
 | `ReceiveMessage` | `MessageDto` | Nova mensagem na conversa |
 
 Obs: precisei setar Guid como string no BSON — o driver 3.x reclama se deixar Unspecified.
+
+## Escala (ponto critico)
+
+Presenca e SignalR usam **Redis** quando `ConnectionStrings:Redis` esta configurado (padrao no compose):
+
+- backplane SignalR (`AddStackExchangeRedis`)
+- `RedisPresenceTracker` para online compartilhado entre instancias
+
+Sem Redis (dev/teste): fallback `PresenceTracker` in-memory.
+
+Ver [02-arquitetura.md](02-arquitetura.md#escala-horizontal--ponto-critico).

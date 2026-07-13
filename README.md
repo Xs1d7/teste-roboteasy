@@ -34,7 +34,7 @@ http://localhost:8080
 
 ## Stack
 
-Vue 3 · .NET 10 · PostgreSQL · MongoDB · RabbitMQ · SignalR
+Vue 3 · .NET 10 · PostgreSQL · MongoDB · RabbitMQ · Redis · SignalR
 
 ## Testes
 
@@ -63,3 +63,26 @@ Infra declarada em [`infra/`](infra/README.md):
 
 - [Google Cloud](infra/gcp/) — Compute Engine + Docker Compose
 - [AWS](infra/aws/) — EC2 + VPC + Elastic IP + Docker Compose
+
+## Escala horizontal — ponto critico que identifiquei
+
+Auth e Frontend sao **stateless**: sobem N replicas sem drama (ECS / Cloud Run).
+
+O gargalo e o **Chat + SignalR**. Sem store compartilhado, presenca e conexoes WebSocket ficam **so na memoria do processo**. Com 2+ instancias:
+
+1. Usuario A conecta no pod 1, B no pod 2
+2. `Clients.User(...)` no pod 1 **nao ve** a conexao do B no pod 2
+3. Online/offline fica inconsistente entre pods
+
+**O que implementei para resolver:**
+
+| Medida | No codigo / compose |
+|--------|---------------------|
+| **Redis backplane** (SignalR) | `AddStackExchangeRedis` quando `ConnectionStrings:Redis` esta setado |
+| **Presenca no Redis** | `RedisPresenceTracker` (fallback in-memory se Redis ausente) |
+| **RabbitMQ** | Ja desacoplava publish/consume entre instancias |
+| Sticky session no LB | Complementar em AWS/GCP (ALB / Cloud LB) — nao substitui Redis |
+
+No `docker compose` o servico **redis** sobe junto com o Chat. Em nuvem: ElastiCache (AWS) ou Memorystore (GCP).
+
+Detalhe: [docs/02-arquitetura.md](docs/02-arquitetura.md#escala-horizontal--ponto-critico).

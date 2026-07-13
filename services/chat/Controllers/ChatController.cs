@@ -9,7 +9,7 @@ namespace Chat.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("api")]
-public class ChatController(PresenceTracker presence, MessageStore store) : ControllerBase
+public class ChatController(IPresenceTracker presence, MessageStore store) : ControllerBase
 {
     [HttpGet("users/online")]
     public ActionResult<IEnumerable<OnlineUser>> Online() => Ok(presence.GetOnline());

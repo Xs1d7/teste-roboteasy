@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.SignalR;
 namespace Chat.Api.Hubs;
 
 [Authorize]
-public class ChatHub(PresenceTracker presence, MessageStore store, EventBus bus) : Hub
+public class ChatHub(IPresenceTracker presence, MessageStore store, EventBus bus) : Hub
 {
     public override async Task OnConnectedAsync()
     {

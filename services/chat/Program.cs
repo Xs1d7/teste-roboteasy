@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +39,6 @@ builder.Services.AddSwaggerGen(opt =>
         [new OpenApiSecuritySchemeReference("Bearer", document)] = []
     });
 });
-builder.Services.AddSingleton<PresenceTracker>();
 builder.Services.AddSingleton<MessageStore>();
 builder.Services.AddSingleton(sp =>
 {
@@ -47,7 +47,25 @@ builder.Services.AddSingleton(sp =>
     return EventBus.CreateAsync(cfg, log).GetAwaiter().GetResult();
 });
 builder.Services.AddHostedService<EventConsumer>();
-builder.Services.AddSignalR();
+
+var redisCs = builder.Configuration.GetConnectionString("Redis");
+if (!string.IsNullOrWhiteSpace(redisCs))
+{
+    builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisCs));
+    builder.Services.AddSingleton<IPresenceTracker, RedisPresenceTracker>();
+    builder.Services
+        .AddSignalR()
+        .AddStackExchangeRedis(redisCs, opt =>
+        {
+            opt.Configuration.ChannelPrefix = RedisChannel.Literal("roboteasy-signalr");
+        });
+}
+else
+{
+    builder.Services.AddSingleton<IPresenceTracker, PresenceTracker>();
+    builder.Services.AddSignalR();
+}
+
 builder.Services.AddSingleton<IUserIdProvider, NameIdProvider>();
 
 var jwtKey = builder.Configuration["Jwt:Key"]

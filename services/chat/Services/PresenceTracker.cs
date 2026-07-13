@@ -3,7 +3,11 @@ using Chat.Api.Models;
 
 namespace Chat.Api.Services;
 
-public class PresenceTracker
+/// <summary>
+/// Presenca em memoria — ok para 1 instancia / testes unitarios.
+/// Com N replicas do Chat use <see cref="RedisPresenceTracker"/>.
+/// </summary>
+public class PresenceTracker : IPresenceTracker
 {
     private readonly ConcurrentDictionary<string, OnlineUser> _byConnection = new();
     private readonly ConcurrentDictionary<Guid, ConcurrentDictionary<string, byte>> _byUser = new();

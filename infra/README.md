@@ -45,5 +45,14 @@ O `startup_script` instala Docker, clona o repo e sobe o compose. Primeira subid
 | Auth / Chat / Frontend | Cloud Run | ECS Fargate + ALB |
 | Postgres | Cloud SQL | RDS |
 | Mongo | Atlas ou GCE | DocumentDB / Atlas |
-| RabbitMQ | Memorystore nao cobre AMQP — CloudAMQP ou GCE | Amazon MQ |
+| RabbitMQ | CloudAMQP ou GCE | Amazon MQ |
 | Imagens | Artifact Registry | ECR |
+| **Escala do Chat (N>1)** | **Memorystore (Redis)** + sticky no LB | **ElastiCache (Redis)** + sticky no ALB |
+
+### Escala horizontal
+
+Auth e Frontend escalam horizontalmente sem mudanca de codigo.
+
+**Ponto critico (identificado e resolvido no codigo):** Chat + SignalR. O compose sobe **Redis**; o Chat usa backplane SignalR + `RedisPresenceTracker`. Em AWS/GCP: ElastiCache / Memorystore + sticky no LB.
+
+Detalhe: [docs/02-arquitetura.md](../docs/02-arquitetura.md#escala-horizontal--ponto-critico).
