@@ -50,4 +50,4 @@ Compose sobe **duas replicas** (`chat-a`, `chat-b`); nginx faz **sticky** com `i
 
 Sem Redis: fallback `PresenceTracker` in-memory.
 
-Ver tambem [06-docker.md](06-docker.md) e o README raiz (secao de escala).
+Ver tambem a secao de escala no [README raiz](../README.md#escala-horizontal--ponto-critico-que-identifiquei).

@@ -1,6 +1,6 @@
-# Diagramas Mermaid (Excalidraw)
+# Diagramas Mermaid
 
-Cole um bloco por vez: **Insert → Mermaid**.
+Cole um bloco por vez no [Excalidraw](https://excalidraw.com/) (**Insert → Mermaid**) ou visualize direto no GitHub/Markdown.
 
 ---
 

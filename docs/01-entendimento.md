@@ -22,13 +22,10 @@ Backend pode ser .NET ou Spring. Fui de **.NET** porque ja e o stack que quero m
 | Historico | Persistencia das mensagens 1:1, buscavel por par de usuarios |
 | Docker | compose com app + dependencias, um comando e sobe |
 
-## O que **nao** esta no enunciado (e nao vou forcar)
+## O que **nao** esta no enunciado (extra que entreguei / evitei)
 
-- Grupos / salas publicas
-- Upload de arquivo
-- Refresh token / OAuth social
-- Notificacoes push
-- Testes e2e pesados
+- Fora do escopo original e **nao** forcei: grupos, OAuth social, push nativo, e2e pesados
+- Extra que entreguei mesmo assim: avatar (MinIO/S3), nao lidas, 2 replicas Chat + Redis, CI, Terraform
 
 ## Criterios de avaliacao
 
@@ -38,4 +35,4 @@ O desenho precisa mostrar separacao de responsabilidade e motivo de cada escolha
 
 ## Arquitetura
 
-Diagrama: [roboteasy-diagram.excalidraw](./roboteasy-diagram.excalidraw) — importar no [Excalidraw](https://excalidraw.com/).
+Diagramas Mermaid: [diagrams-mermaid.md](./diagrams-mermaid.md).

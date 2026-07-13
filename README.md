@@ -6,8 +6,6 @@ Auth JWT, usuarios online, mensagens via SignalR e historico no Mongo. Dois serv
 
 **Documentacao completa:** [docs/README.md](docs/README.md) (screenshots, arquitetura, como rodar)
 
-**Visao de evolucao com IA:** [docs/07-evolucao-ia.md](docs/07-evolucao-ia.md) (doc only, fora do escopo do codigo)
-
 **Enunciado original:** [docs/DESAFIO.md](docs/DESAFIO.md)
 
 ## Preview
@@ -110,4 +108,4 @@ O gargalo e o **Chat + SignalR**. Sem store compartilhado, presenca e conexoes W
 | **Sticky** | nginx `ip_hash` (local); exemplos ALB / Cloud LB em `infra/` |
 | **RabbitMQ** | publish/consume entre qualquer replica |
 
-Resumo no compose: [docs/06-docker.md](docs/06-docker.md).
+Como rodar e detalhes do compose: [docs/README.md](docs/README.md).

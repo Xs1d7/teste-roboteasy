@@ -39,7 +39,7 @@ Com o site aberto na lista (sem chat aberto), novas mensagens aparecem com badge
 | Historico | MongoDB, filtro por par de usuarios |
 | Frontend Vue (3 telas) | Login (+ passo opcional de avatar), lista online, conversa (+ landing) |
 | Mensagens nao lidas | Badge + preview na lista; titulo `(N) Roboteasy`; Notification API opcional |
-| Escala do Chat | nginx `ip_hash` (sticky) + Redis; ver [06-docker.md](06-docker.md) |
+| Escala do Chat | nginx `ip_hash` (sticky) + Redis; ver secao de escala no [README raiz](../README.md#escala-horizontal--ponto-critico-que-identifiquei) |
 | Docker | `docker compose up --build` sobe tudo (inclui redis, minio + 2 chats) |
 
 ## Stack
@@ -69,13 +69,12 @@ flowchart LR
 
 nginx faz sticky (`ip_hash`) entre as duas replicas do Chat. Variantes AWS/GCP e fluxos de mensagem/avatar: [diagrams-mermaid.md](diagrams-mermaid.md).
 
-Escala do Chat (Redis, 2 replicas, sticky): [06-docker.md](06-docker.md) e a secao no [README raiz](../README.md#escala-horizontal--ponto-critico-que-identifiquei).
+Escala do Chat (Redis, 2 replicas, sticky): secao no [README raiz](../README.md#escala-horizontal--ponto-critico-que-identifiquei).
 
 Documentacao do processo:
 
 - [Entendimento](01-entendimento.md)
-- [Auth](03-auth.md) · [Chat](04-chat.md) · [Frontend](05-frontend.md) · [Docker](06-docker.md) · [Testes](testes.md)
-- [Evolucao com IA](07-evolucao-ia.md) — visao de arquiteto (nao implementado)
+- [Auth](03-auth.md) · [Chat](04-chat.md) · [Frontend](05-frontend.md) · [Testes](testes.md)
 - [Deploy Terraform](../infra/README.md) — GCP (Compute Engine) e AWS (EC2)
 
 ## Como rodar
@@ -102,7 +101,7 @@ RabbitMQ management (opcional): http://localhost:15672 — `guest` / `guest`
 Infra only:
 
 ```bash
-docker compose up postgres mongo rabbitmq redis -d
+docker compose up postgres mongo rabbitmq redis minio -d
 ```
 
 APIs:
