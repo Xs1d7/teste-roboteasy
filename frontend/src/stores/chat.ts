@@ -4,11 +4,27 @@ import * as signalR from '@microsoft/signalr'
 import axios from 'axios'
 import { useAuthStore } from './auth'
 import type { ChatMessage, OnlineUser } from '../types/api'
+import {
+  currentPermission,
+  ensureNotificationPermission,
+  maybeNotifyIncoming
+} from '../lib/notifications'
 
 export const useChatStore = defineStore('chat', () => {
   const connection = ref<signalR.HubConnection | null>(null)
   const online = ref<OnlineUser[]>([])
   const connected = ref(false)
+  /** Conversa aberta agora (para nao notificar se ja esta olhando). */
+  const activePeerId = ref<string | null>(null)
+  const notificationPermission = ref(currentPermission())
+
+  function setActivePeer(userId: string | null) {
+    activePeerId.value = userId
+  }
+
+  async function enableNotifications() {
+    notificationPermission.value = await ensureNotificationPermission()
+  }
 
   async function connect() {
     const auth = useAuthStore()
@@ -30,6 +46,10 @@ export const useChatStore = defineStore('chat', () => {
       await refreshOnline()
     })
 
+    hub.on('ReceiveMessage', (msg: ChatMessage) => {
+      maybeNotifyIncoming(msg, auth.userId, activePeerId.value)
+    })
+
     hub.onclose(() => { connected.value = false })
     hub.onreconnected(async () => {
       connected.value = true
@@ -40,6 +60,11 @@ export const useChatStore = defineStore('chat', () => {
     connection.value = hub
     connected.value = true
     await refreshOnline()
+
+    // pede permissao na primeira conexao (se ainda default)
+    if (notificationPermission.value === 'default') {
+      void enableNotifications()
+    }
   }
 
   async function refreshOnline() {
@@ -77,20 +102,25 @@ export const useChatStore = defineStore('chat', () => {
   async function disconnect() {
     if (connection.value) {
       await connection.value.stop()
-      connection.value = null
-      connected.value = false
-      online.value = []
     }
+    connection.value = null
+    connected.value = false
+    online.value = []
+    activePeerId.value = null
   }
 
   return {
     online,
     connected,
+    activePeerId,
+    notificationPermission,
     connect,
     disconnect,
     refreshOnline,
     loadHistory,
     sendMessage,
-    onMessage
+    onMessage,
+    setActivePeer,
+    enableNotifications
   }
 })

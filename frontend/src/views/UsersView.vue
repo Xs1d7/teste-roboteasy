@@ -13,7 +13,17 @@
     <section class="panel list-wrap">
       <div class="list-head">
         <h2>Usuarios disponiveis</h2>
-        <button class="btn ghost" type="button" @click="chat.refreshOnline()">Atualizar</button>
+        <div class="list-actions">
+          <button
+            v-if="chat.notificationPermission !== 'granted' && chat.notificationPermission !== 'unsupported'"
+            class="btn ghost"
+            type="button"
+            @click="chat.enableNotifications()"
+          >
+            Ativar notificacoes
+          </button>
+          <button class="btn ghost" type="button" @click="chat.refreshOnline()">Atualizar</button>
+        </div>
       </div>
 
       <p v-if="others.length === 0" class="empty">
@@ -95,6 +105,12 @@ async function sair() {
 .list-head h2 {
   margin: 0;
   font-size: 1.15rem;
+}
+
+.list-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .empty {

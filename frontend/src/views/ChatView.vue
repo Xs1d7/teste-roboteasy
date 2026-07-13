@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AppShell from '../components/AppShell.vue'
 import MessageBubble from '../components/MessageBubble.vue'
@@ -94,6 +94,7 @@ async function scrollBottom() {
 }
 
 onMounted(async () => {
+  chat.setActivePeer(peerId.value)
   try {
     await chat.connect()
     messages.value = await chat.loadHistory(peerId.value)
@@ -112,7 +113,12 @@ onMounted(async () => {
   })
 })
 
+watch(peerId, (id) => {
+  chat.setActivePeer(id)
+})
+
 onUnmounted(() => {
+  chat.setActivePeer(null)
   if (off) off()
 })
 
