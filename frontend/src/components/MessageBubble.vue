@@ -1,44 +1,44 @@
 <template>
-  <div class="bubble" :class="{ mine }">
-    <div class="content">{{ content }}</div>
-    <div class="time">{{ time }}</div>
-  </div>
+  <Message :align="mine ? 'end' : 'start'" class="animate-in fade-in slide-in-from-bottom-1 duration-200">
+    <MessageAvatar v-if="!mine">
+      <Avatar size="sm" class="size-8">
+        <AvatarFallback class="bg-secondary text-[0.65rem] font-semibold">
+          {{ initials(author) }}
+        </AvatarFallback>
+      </Avatar>
+    </MessageAvatar>
+
+    <MessageContent class="max-w-[min(80%,28rem)] gap-1">
+      <Bubble :variant="mine ? 'default' : 'secondary'" :align="mine ? 'end' : 'start'">
+        <BubbleContent class="whitespace-pre-wrap">
+          {{ content }}
+        </BubbleContent>
+      </Bubble>
+      <MessageFooter>
+        {{ time }}
+      </MessageFooter>
+    </MessageContent>
+  </Message>
 </template>
 
 <script setup lang="ts">
-defineProps<{
-  content: string
-  time: string
-  mine?: boolean
-}>()
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Bubble, BubbleContent } from '@/components/ui/bubble'
+import {
+  Message,
+  MessageAvatar,
+  MessageContent,
+  MessageFooter
+} from '@/components/ui/message'
+import { initials } from '@/lib/initials'
+
+withDefaults(
+  defineProps<{
+    content: string
+    time: string
+    author?: string
+    mine?: boolean
+  }>(),
+  { author: '?', mine: false }
+)
 </script>
-
-<style scoped>
-.bubble {
-  max-width: min(75%, 420px);
-  padding: 0.7rem 0.85rem;
-  border-radius: 12px;
-  background: var(--them);
-  border: 1px solid var(--line);
-  align-self: flex-start;
-}
-
-.bubble.mine {
-  align-self: flex-end;
-  background: var(--me);
-  border-color: #2f6d5d;
-}
-
-.content {
-  white-space: pre-wrap;
-  word-break: break-word;
-  line-height: 1.4;
-}
-
-.time {
-  margin-top: 0.35rem;
-  font-size: 0.72rem;
-  color: var(--muted);
-  text-align: right;
-}
-</style>

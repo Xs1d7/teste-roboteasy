@@ -1,53 +1,115 @@
 <template>
   <AppShell
-    shell-class="chat-shell"
-    topbar-class="chat-topbar"
+    shell-class="max-w-2xl"
     :title="peerName"
-    title-class="peer"
+    title-class="font-heading"
   >
     <template #leading>
-      <button class="btn ghost back" type="button" @click="router.push('/users')">Voltar</button>
+      <Button
+        variant="outline"
+        size="sm"
+        type="button"
+        @click="router.push('/users')"
+      >
+        <ArrowLeft />
+        Voltar
+      </Button>
     </template>
     <template #trailing>
-      <div class="meta">voce: {{ auth.username }}</div>
+      <div class="flex items-center gap-2 text-sm text-muted-foreground">
+        <Avatar size="sm" class="size-7">
+          <AvatarFallback class="bg-secondary text-[0.65rem] font-semibold">
+            {{ initials(auth.username || '?') }}
+          </AvatarFallback>
+        </Avatar>
+        <span class="hidden sm:inline">voce: {{ auth.username }}</span>
+      </div>
     </template>
 
-    <section class="panel thread">
-      <div ref="scroller" class="messages">
-        <p v-if="loading" class="empty">Carregando historico...</p>
-        <p v-else-if="messages.length === 0" class="empty">Nenhuma mensagem ainda. Manda um oi.</p>
+    <Card class="flex min-h-[70vh] flex-col overflow-hidden border-border/80 shadow-xl shadow-black/20">
+      <ScrollArea class="flex-1">
+        <div ref="scroller" class="flex max-h-[calc(70vh-5.5rem)] flex-col gap-3 overflow-y-auto p-4">
+          <Empty v-if="loading" class="border-0 py-10">
+            <EmptyHeader>
+              <EmptyDescription>Carregando historico...</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
 
-        <MessageBubble
-          v-for="m in messages"
-          :key="m.id + m.sentAt"
-          :content="m.content"
-          :time="formatTime(m.sentAt)"
-          :mine="isMine(m)"
-        />
-      </div>
+          <Empty v-else-if="messages.length === 0" class="border-0 py-10">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <MessageSquare />
+              </EmptyMedia>
+              <EmptyTitle>Nenhuma mensagem ainda</EmptyTitle>
+              <EmptyDescription>Manda um oi para comecar a conversa.</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
 
-      <form class="composer" @submit.prevent="enviar">
-        <input
+          <MessageBubble
+            v-for="m in messages"
+            :key="m.id + m.sentAt"
+            :content="m.content"
+            :time="formatTime(m.sentAt)"
+            :author="m.fromUsername"
+            :mine="isMine(m)"
+          />
+        </div>
+      </ScrollArea>
+
+      <Separator />
+
+      <form class="flex items-end gap-2 bg-card/80 p-3" @submit.prevent="enviar">
+        <Textarea
           v-model="draft"
           placeholder="Escreva uma mensagem..."
           maxlength="2000"
           autocomplete="off"
+          rows="1"
+          class="max-h-32 min-h-10 flex-1 resize-none"
+          @keydown.enter.exact.prevent="enviar"
         />
-        <button class="btn" type="submit" :disabled="!draft.trim() || sending">Enviar</button>
+        <Button
+          type="submit"
+          size="lg"
+          class="shrink-0"
+          :disabled="!draft.trim() || sending"
+        >
+          <SendHorizontal />
+          Enviar
+        </Button>
       </form>
-      <p v-if="error" class="error pad">{{ error }}</p>
-    </section>
+
+      <Alert v-if="error" variant="destructive" class="m-3 mt-0">
+        <AlertDescription>{{ error }}</AlertDescription>
+      </Alert>
+    </Card>
   </AppShell>
 </template>
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import AppShell from '../components/AppShell.vue'
-import MessageBubble from '../components/MessageBubble.vue'
-import { useAuthStore } from '../stores/auth'
-import { useChatStore } from '../stores/chat'
-import type { ChatMessage } from '../types/api'
+import { ArrowLeft, MessageSquare, SendHorizontal } from '@lucide/vue'
+import AppShell from '@/components/AppShell.vue'
+import MessageBubble from '@/components/MessageBubble.vue'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle
+} from '@/components/ui/empty'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Separator } from '@/components/ui/separator'
+import { Textarea } from '@/components/ui/textarea'
+import { initials } from '@/lib/initials'
+import { useAuthStore } from '@/stores/auth'
+import { useChatStore } from '@/stores/chat'
+import type { ChatMessage } from '@/types/api'
 
 const auth = useAuthStore()
 const chat = useChatStore()
@@ -137,60 +199,3 @@ async function enviar() {
   }
 }
 </script>
-
-<style scoped>
-.chat-shell { max-width: 820px; }
-
-:deep(.chat-topbar) { align-items: flex-end; }
-
-:deep(.peer) { margin-top: 0.15rem; }
-
-.back {
-  margin-bottom: 0.45rem;
-  padding: 0.35rem 0.7rem;
-  font-size: 0.85rem;
-}
-
-.thread {
-  display: flex;
-  flex-direction: column;
-  min-height: 70vh;
-  overflow: hidden;
-}
-
-.messages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1.1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-}
-
-.empty {
-  color: var(--muted);
-  margin: 1rem 0;
-}
-
-.composer {
-  display: flex;
-  gap: 0.6rem;
-  padding: 0.9rem;
-  border-top: 1px solid var(--line);
-  background: rgba(0, 0, 0, 0.15);
-}
-
-.composer input {
-  flex: 1;
-  background: #0d1f1b;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 0.75rem 0.85rem;
-  color: var(--text);
-  outline: none;
-}
-
-.composer input:focus { border-color: var(--accent-2); }
-
-.pad { padding: 0 0.9rem 0.8rem; }
-</style>

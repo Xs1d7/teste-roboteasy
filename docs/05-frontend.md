@@ -7,6 +7,8 @@ App Vue no ar com:
 3. Online + chat SignalR
 4. Indicador de mensagens **nao lidas** na lista (+ Notification API opcional)
 
+UI: **Tailwind CSS v4** + **shadcn-vue** (Reka UI) — `Button`, `Card`, `Avatar`, `Badge`, `Bubble`/`Message`, `ScrollArea`, etc.
+
 ## Nao lidas (in-app)
 
 Quando o usuario esta na lista (sem chat aberto) e recebe mensagem:

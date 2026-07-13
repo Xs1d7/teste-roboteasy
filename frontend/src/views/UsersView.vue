@@ -1,62 +1,119 @@
 <template>
-  <AppShell
-    title="Roboteasy"
-    :subtitle="subtitle"
-  >
+  <AppShell title="Roboteasy" :subtitle="subtitle">
     <template #trailing>
-      <span class="status" :class="{ on: chat.connected }">
+      <Badge
+        :variant="chat.connected ? 'default' : 'secondary'"
+        class="uppercase tracking-wide"
+      >
+        <span
+          :class="cn(
+            'mr-1.5 size-1.5 rounded-full',
+            chat.connected ? 'bg-primary-foreground' : 'bg-muted-foreground animate-pulse',
+          )"
+        />
         {{ chat.connected ? 'online' : 'conectando...' }}
-      </span>
-      <button class="btn ghost" type="button" @click="sair">Sair</button>
+      </Badge>
+      <Button variant="outline" size="sm" type="button" @click="sair">
+        <LogOut />
+        Sair
+      </Button>
     </template>
 
-    <section class="panel list-wrap">
-      <div class="list-head">
-        <h2>
-          Usuarios disponiveis
-          <span v-if="chat.totalUnread > 0" class="head-badge">{{ chat.totalUnread }}</span>
-        </h2>
-        <div class="list-actions">
-          <button
-            v-if="chat.notificationPermission === 'default'"
-            class="btn ghost"
-            type="button"
-            @click="pedirNotificacoes"
-          >
-            Ativar notificacoes
-          </button>
-          <button class="btn ghost" type="button" @click="chat.refreshOnline()">Atualizar</button>
+    <Card class="overflow-hidden border-border/80 shadow-xl shadow-black/20">
+      <CardHeader class="border-b border-border/60 pb-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <CardTitle class="font-heading flex items-center gap-2 text-lg">
+            Usuarios disponiveis
+            <Badge v-if="chat.totalUnread > 0" class="h-5 min-w-5 justify-center px-1.5">
+              {{ chat.totalUnread }}
+            </Badge>
+          </CardTitle>
+          <div class="flex flex-wrap gap-2">
+            <Button
+              v-if="chat.notificationPermission === 'default'"
+              variant="outline"
+              size="sm"
+              type="button"
+              @click="pedirNotificacoes"
+            >
+              <Bell />
+              Ativar notificacoes
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              type="button"
+              @click="chat.refreshOnline()"
+            >
+              <RefreshCw />
+              Atualizar
+            </Button>
+          </div>
         </div>
-      </div>
+      </CardHeader>
 
-      <p v-if="notifHint" class="hint" :class="{ warn: notifHintWarn }">{{ notifHint }}</p>
+      <CardContent class="p-0">
+        <Alert
+          v-if="notifHint"
+          :variant="notifHintWarn ? 'destructive' : 'default'"
+          class="m-4"
+        >
+          <AlertDescription>{{ notifHint }}</AlertDescription>
+        </Alert>
 
-      <p v-if="others.length === 0" class="empty">
-        Ninguem online no momento. Abra outra aba com outro usuario pra testar.
-      </p>
+        <Empty v-if="others.length === 0" class="border-0 py-14">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <Users />
+            </EmptyMedia>
+            <EmptyTitle>Ninguem online</EmptyTitle>
+            <EmptyDescription>
+              Abra outra aba com outro usuario pra testar o chat em tempo real.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
 
-      <ul v-else class="user-list">
-        <UserRow
-          v-for="u in others"
-          :key="u.userId"
-          :username="u.username"
-          :unread="chat.unreadCount(u.userId)"
-          :preview="chat.lastPreview(u.userId)"
-          @select="abrir(u)"
-        />
-      </ul>
-    </section>
+        <ul v-else class="space-y-0.5 p-2">
+          <UserRow
+            v-for="u in others"
+            :key="u.userId"
+            :username="u.username"
+            :unread="chat.unreadCount(u.userId)"
+            :preview="chat.lastPreview(u.userId)"
+            @select="abrir(u)"
+          />
+        </ul>
+      </CardContent>
+    </Card>
   </AppShell>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import AppShell from '../components/AppShell.vue'
-import UserRow from '../components/UserRow.vue'
-import { useAuthStore } from '../stores/auth'
-import { useChatStore } from '../stores/chat'
-import type { OnlineUser } from '../types/api'
+import { Bell, LogOut, RefreshCw, Users } from '@lucide/vue'
+import AppShell from '@/components/AppShell.vue'
+import UserRow from '@/components/UserRow.vue'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card'
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle
+} from '@/components/ui/empty'
+import { useAuthStore } from '@/stores/auth'
+import { useChatStore } from '@/stores/chat'
+import { cn } from '@/lib/utils'
+import type { OnlineUser } from '@/types/api'
 
 const auth = useAuthStore()
 const chat = useChatStore()
@@ -127,71 +184,3 @@ async function sair() {
   await router.push('/login')
 }
 </script>
-
-<style scoped>
-.status {
-  font-size: 0.8rem;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.status.on { color: var(--accent); }
-
-.list-wrap { padding: 1.1rem 1.2rem 0.6rem; }
-
-.list-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 0.75rem;
-}
-
-.list-head h2 {
-  margin: 0;
-  font-size: 1.15rem;
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-}
-
-.head-badge {
-  min-width: 1.4rem;
-  height: 1.4rem;
-  padding: 0 0.4rem;
-  border-radius: 999px;
-  background: var(--accent);
-  color: #042015;
-  font-size: 0.75rem;
-  font-weight: 700;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.list-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.hint {
-  margin: 0 0 0.85rem;
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-
-.hint.warn { color: #d4a574; }
-
-.empty {
-  color: var(--muted);
-  padding: 1.5rem 0.25rem 1.75rem;
-}
-
-.user-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-</style>

@@ -1,36 +1,70 @@
 <template>
-  <div class="auth-page">
-    <div class="auth-card panel">
-      <p class="eyebrow">Roboteasy</p>
-      <h1>{{ mode === 'login' ? 'Entrar' : 'Criar conta' }}</h1>
-      <p class="hint">
-        {{ mode === 'login'
-          ? 'Acesse sua conta para continuar a conversa.'
-          : 'Crie um usuario e comece a falar em segundos.' }}
-      </p>
+  <div class="auth-page flex min-h-dvh items-center justify-center p-6">
+    <Card class="w-full max-w-md border-border/80 shadow-xl shadow-black/20">
+      <CardHeader>
+        <p class="text-xs font-semibold tracking-[0.14em] text-primary uppercase">
+          Roboteasy
+        </p>
+        <CardTitle class="font-heading text-2xl">
+          {{ mode === 'login' ? 'Entrar' : 'Criar conta' }}
+        </CardTitle>
+        <CardDescription>
+          {{
+            mode === 'login'
+              ? 'Acesse sua conta para continuar a conversa.'
+              : 'Crie um usuario e comece a falar em segundos.'
+          }}
+        </CardDescription>
+      </CardHeader>
 
-      <form @submit.prevent="submit">
-        <div class="field">
-          <label for="user">Usuario</label>
-          <input id="user" v-model.trim="username" autocomplete="username" required minlength="3" />
-        </div>
-        <div class="field">
-          <label for="pass">Senha</label>
-          <input id="pass" v-model="password" type="password" autocomplete="current-password" required minlength="4" />
-        </div>
+      <CardContent>
+        <form class="space-y-4" @submit.prevent="submit">
+          <div class="space-y-2">
+            <Label for="user">Usuario</Label>
+            <Input
+              id="user"
+              v-model.trim="username"
+              autocomplete="username"
+              required
+              minlength="3"
+              class="h-10"
+            />
+          </div>
+          <div class="space-y-2">
+            <Label for="pass">Senha</Label>
+            <Input
+              id="pass"
+              v-model="password"
+              type="password"
+              autocomplete="current-password"
+              required
+              minlength="4"
+              class="h-10"
+            />
+          </div>
 
-        <p v-if="error" class="error">{{ error }}</p>
+          <Alert v-if="error" variant="destructive">
+            <AlertDescription>{{ error }}</AlertDescription>
+          </Alert>
 
-        <div class="actions">
-          <button class="btn" type="submit" :disabled="loading">
-            {{ loading ? 'Aguarde...' : (mode === 'login' ? 'Login' : 'Cadastrar') }}
-          </button>
-          <button class="btn ghost" type="button" @click="toggle" :disabled="loading">
-            {{ mode === 'login' ? 'Cadastrar-se' : 'Ja tenho conta' }}
-          </button>
-        </div>
-      </form>
-    </div>
+          <div class="flex flex-wrap gap-2 pt-1">
+            <Button type="submit" size="lg" class="min-w-28" :disabled="loading">
+              <LoaderCircle v-if="loading" class="animate-spin" />
+              {{ loading ? 'Aguarde...' : mode === 'login' ? 'Login' : 'Cadastrar' }}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              :disabled="loading"
+              @click="toggle"
+            >
+              {{ mode === 'login' ? 'Cadastrar-se' : 'Ja tenho conta' }}
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   </div>
 </template>
 
@@ -38,8 +72,20 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
-import { useAuthStore } from '../stores/auth'
-import type { ApiErrorBody } from '../types/api'
+import { LoaderCircle } from '@lucide/vue'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useAuthStore } from '@/stores/auth'
+import type { ApiErrorBody } from '@/types/api'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -75,47 +121,3 @@ async function submit() {
   }
 }
 </script>
-
-<style scoped>
-.auth-page {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 1.5rem;
-  background:
-    radial-gradient(900px 480px at 15% -10%, #1a3d34 0%, transparent 55%),
-    radial-gradient(700px 400px at 100% 0%, #0d2a32 0%, transparent 50%),
-    var(--bg);
-}
-
-.auth-card {
-  width: min(420px, 100%);
-  padding: 1.75rem;
-}
-
-.eyebrow {
-  margin: 0 0 0.35rem;
-  color: var(--accent);
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-h1 {
-  margin: 0 0 0.4rem;
-  font-size: 1.8rem;
-}
-
-.hint {
-  margin: 0 0 1.4rem;
-  color: var(--muted);
-}
-
-.actions {
-  display: flex;
-  gap: 0.65rem;
-  margin-top: 1rem;
-  flex-wrap: wrap;
-}
-</style>

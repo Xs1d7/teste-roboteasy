@@ -47,7 +47,7 @@ Com o site aberto na lista (sem chat aberto), novas mensagens aparecem com badge
 
 | Camada | Tecnologia |
 |--------|------------|
-| Frontend | Vue 3, TypeScript, Pinia, Vue Router, SignalR client |
+| Frontend | Vue 3, TypeScript, Pinia, Vue Router, SignalR, Tailwind + shadcn-vue |
 | Auth | .NET 10, EF Core, PostgreSQL |
 | Chat | .NET 10, SignalR, MongoDB, RabbitMQ, Redis (presenca + backplane) |
 | Infra | Docker Compose, nginx (proxy + sticky `ip_hash` para o Chat) |

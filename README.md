@@ -35,7 +35,7 @@ http://localhost:8080
 
 ## Stack
 
-Vue 3 · .NET 10 · PostgreSQL · MongoDB · RabbitMQ · Redis · SignalR
+Vue 3 · Tailwind · shadcn-vue · .NET 10 · PostgreSQL · MongoDB · RabbitMQ · Redis · SignalR
 
 ## Testes
 
