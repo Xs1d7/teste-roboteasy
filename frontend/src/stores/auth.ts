@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import axios from 'axios'
-import type { AuthResponse, StoredAuth } from '../types/api'
+import type { AuthResponse, AvatarUploadResponse, StoredAuth } from '../types/api'
 
 const KEY = 're_auth'
 
@@ -18,6 +18,7 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(saved?.token ?? null)
   const userId = ref<string | null>(saved?.userId ?? null)
   const username = ref<string | null>(saved?.username ?? null)
+  const avatarUrl = ref<string | null>(saved?.avatarUrl ?? null)
 
   const isLogged = computed(() => !!token.value)
 
@@ -29,7 +30,8 @@ export const useAuthStore = defineStore('auth', () => {
     const payload: StoredAuth = {
       token: token.value,
       userId: userId.value ?? '',
-      username: username.value ?? ''
+      username: username.value ?? '',
+      avatarUrl: avatarUrl.value
     }
     localStorage.setItem(KEY, JSON.stringify(payload))
   }
@@ -50,10 +52,24 @@ export const useAuthStore = defineStore('auth', () => {
     apply(data)
   }
 
+  async function uploadAvatar(file: File) {
+    const form = new FormData()
+    form.append('file', file)
+    const { data } = await axios.post<AvatarUploadResponse>(
+      '/api/users/avatar',
+      form,
+      { headers: authHeader() }
+    )
+    avatarUrl.value = data.avatarUrl
+    persist()
+    return data.avatarUrl
+  }
+
   function apply(data: AuthResponse) {
     token.value = data.token
     userId.value = data.userId
     username.value = data.username
+    avatarUrl.value = data.avatarUrl ?? null
     persist()
   }
 
@@ -61,6 +77,7 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = null
     userId.value = null
     username.value = null
+    avatarUrl.value = null
     persist()
   }
 
@@ -68,5 +85,16 @@ export const useAuthStore = defineStore('auth', () => {
     return { Authorization: `Bearer ${token.value}` }
   }
 
-  return { token, userId, username, isLogged, register, login, logout, authHeader }
+  return {
+    token,
+    userId,
+    username,
+    avatarUrl,
+    isLogged,
+    register,
+    login,
+    uploadAvatar,
+    logout,
+    authHeader
+  }
 })

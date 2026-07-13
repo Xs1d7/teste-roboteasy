@@ -1,4 +1,7 @@
 using System.Text;
+using Amazon.Runtime;
+using Amazon.S3;
+using Auth.Api.Configuration;
 using Auth.Api.Data;
 using Auth.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -37,6 +40,21 @@ builder.Services.AddSwaggerGen(opt =>
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("Postgres")));
 builder.Services.AddSingleton<TokenService>();
+
+builder.Services.Configure<StorageOptions>(builder.Configuration.GetSection(StorageOptions.SectionName));
+builder.Services.AddSingleton<IAmazonS3>(sp =>
+{
+    var opts = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<StorageOptions>>().Value;
+    var config = new AmazonS3Config
+    {
+        ServiceURL = opts.ServiceUrl,
+        ForcePathStyle = opts.ForcePathStyle,
+        AuthenticationRegion = "us-east-1"
+    };
+    var credentials = new BasicAWSCredentials(opts.AccessKey, opts.SecretKey);
+    return new AmazonS3Client(credentials, config);
+});
+builder.Services.AddScoped<IStorageService, S3StorageService>();
 
 var jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException("Configure Jwt:Key");
@@ -77,6 +95,24 @@ using (var scope = app.Services.CreateScope())
         try
         {
             db.Database.EnsureCreated();
+            // Banco ja existente (EnsureCreated nao altera schema): garante coluna AvatarKey
+            await db.Database.ExecuteSqlRawAsync(
+                """ALTER TABLE "Users" ADD COLUMN IF NOT EXISTS "AvatarKey" character varying(255) NULL;""");
+            break;
+        }
+        catch
+        {
+            Thread.Sleep(2000);
+        }
+    }
+
+    var storage = scope.ServiceProvider.GetRequiredService<IStorageService>();
+    var storageOpts = scope.ServiceProvider.GetRequiredService<Microsoft.Extensions.Options.IOptions<StorageOptions>>().Value;
+    for (var i = 0; i < 10; i++)
+    {
+        try
+        {
+            await storage.EnsureBucketAsync(storageOpts.AvatarBucket);
             break;
         }
         catch

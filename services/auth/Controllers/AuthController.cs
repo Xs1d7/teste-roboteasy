@@ -33,16 +33,24 @@ public class AuthController(AppDbContext db, TokenService tokens) : ControllerBa
         db.Users.Add(user);
         await db.SaveChangesAsync();
 
-        return Ok(new AuthResponse(tokens.CreateToken(user), user.Id, user.Username));
+        return Ok(new AuthResponse(tokens.CreateToken(user), user.Id, user.Username, null));
     }
 
     [HttpPost("login")]
     public async Task<ActionResult<AuthResponse>> Login([FromBody] LoginRequest req)
     {
         var user = await db.Users.FirstOrDefaultAsync(u => u.Username == req.Username);
-        if (user is null || !BCrypt.Net.BCrypt.Verify(req.Password, user.PasswordHash))
-            return Unauthorized(new { message = "Usuario ou senha invalidos." });
 
-        return Ok(new AuthResponse(tokens.CreateToken(user), user.Id, user.Username));
+        if (user is null || !BCrypt.Net.BCrypt.Verify(req.Password, user.PasswordHash))
+            return Unauthorized(new { message = "Usuário ou senha inválidos." });
+
+        // URL relativa: funciona via proxy do frontend (Vite/nginx) sem hardcode de host
+        string? avatarUrl = string.IsNullOrEmpty(user.AvatarKey)
+            ? null
+            : $"/api/users/avatar/{user.AvatarKey}";
+
+        var token = tokens.CreateToken(user);
+
+        return Ok(new AuthResponse(token, user.Id, user.Username, avatarUrl));
     }
 }

@@ -13,6 +13,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         user.HasKey(x => x.Id);
         user.HasIndex(x => x.Username).IsUnique();
         user.Property(x => x.Username).HasMaxLength(64).IsRequired();
+        user.Property(x => x.AvatarKey).HasMaxLength(255).IsRequired(false);
         user.Property(x => x.PasswordHash).IsRequired();
     }
 }

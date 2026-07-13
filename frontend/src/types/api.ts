@@ -2,12 +2,14 @@ export interface AuthResponse {
   token: string
   userId: string
   username: string
+  avatarUrl?: string | null
 }
 
 export interface StoredAuth {
   token: string
   userId: string
   username: string
+  avatarUrl?: string | null
 }
 
 export interface OnlineUser {
@@ -27,4 +29,8 @@ export interface ChatMessage {
 
 export interface ApiErrorBody {
   message?: string
+}
+
+export interface AvatarUploadResponse {
+  avatarUrl: string
 }

@@ -1,5 +1,13 @@
 <template>
   <AppShell title="Roboteasy" :subtitle="subtitle">
+    <template #leading>
+      <Avatar size="default" class="size-10">
+        <AvatarImage v-if="auth.avatarUrl" :src="auth.avatarUrl" :alt="auth.username ?? 'avatar'" />
+        <AvatarFallback class="bg-secondary text-sm font-semibold text-secondary-foreground">
+          {{ initials(auth.username || '?') }}
+        </AvatarFallback>
+      </Avatar>
+    </template>
     <template #trailing>
       <Badge
         :variant="chat.connected ? 'default' : 'secondary'"
@@ -95,6 +103,7 @@ import { Bell, LogOut, RefreshCw, Users } from '@lucide/vue'
 import AppShell from '@/components/AppShell.vue'
 import UserRow from '@/components/UserRow.vue'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -110,6 +119,7 @@ import {
   EmptyMedia,
   EmptyTitle
 } from '@/components/ui/empty'
+import { initials } from '@/lib/initials'
 import { useAuthStore } from '@/stores/auth'
 import { useChatStore } from '@/stores/chat'
 import { cn } from '@/lib/utils'
