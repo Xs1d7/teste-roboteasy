@@ -24,6 +24,12 @@ Historico carregado do Mongo + envio em tempo real.
 
 ![Chat](screenshots/chat.png)
 
+### Mensagens nao lidas
+
+Com o site aberto na lista (sem chat aberto), novas mensagens aparecem com badge, preview e destaque no usuario.
+
+![Nao lidas / notificacoes](screenshots/notification.png)
+
 ## O que foi entregue
 
 | Requisito | Como foi feito |
@@ -33,6 +39,7 @@ Historico carregado do Mongo + envio em tempo real.
 | Mensagens realtime | Hub `/hubs/chat`, RabbitMQ entre publish/consume |
 | Historico | MongoDB, filtro por par de usuarios |
 | Frontend Vue (3 telas) | Login, lista online, conversa (+ landing) |
+| Mensagens nao lidas | Badge + preview na lista; titulo `(N) Roboteasy`; Notification API opcional |
 | Docker | `docker compose up --build` sobe tudo |
 
 ## Stack

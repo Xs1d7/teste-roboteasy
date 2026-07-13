@@ -12,9 +12,9 @@ Auth JWT, usuarios online, mensagens via SignalR e historico no Mongo. Dois serv
 
 ## Preview
 
-| Landing | Usuarios online | Conversa |
-|---------|-----------------|----------|
-| ![Landing](docs/screenshots/site-presentation.png) | ![Online](docs/screenshots/available-users.png) | ![Chat](docs/screenshots/chat.png) |
+| Landing | Usuarios online | Conversa | Nao lidas |
+|---------|-----------------|----------|-----------|
+| ![Landing](docs/screenshots/site-presentation.png) | ![Online](docs/screenshots/available-users.png) | ![Chat](docs/screenshots/chat.png) | ![Notificacoes](docs/screenshots/notification.png) |
 
 ## Rodar em 1 comando
 
@@ -29,6 +29,7 @@ http://localhost:8080
 - Login/cadastro com JWT (Postgres)
 - Lista de quem esta conectado agora
 - Chat 1:1 com historico (Mongo + SignalR)
+- Indicador de mensagens nao lidas (badge + preview na lista)
 - Docker Compose + nginx
 
 ## Stack
