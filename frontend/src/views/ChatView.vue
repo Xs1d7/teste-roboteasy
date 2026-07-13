@@ -9,11 +9,17 @@
         variant="outline"
         size="sm"
         type="button"
-        @click="router.push('/users')"
+        @click="voltar"
       >
         <ArrowLeft />
         Voltar
       </Button>
+      <Avatar size="default" class="size-10">
+        <AvatarImage v-if="peerAvatarUrl" :src="peerAvatarUrl" :alt="peerName" />
+        <AvatarFallback class="bg-secondary text-sm font-semibold text-secondary-foreground">
+          {{ initials(peerName) }}
+        </AvatarFallback>
+      </Avatar>
     </template>
     <template #trailing>
       <div class="flex items-center gap-2 text-sm text-muted-foreground">
@@ -52,10 +58,19 @@
             :content="m.content"
             :time="formatTime(m.sentAt)"
             :author="m.fromUsername"
+            :avatar-url="isMine(m) ? auth.avatarUrl : peerAvatarUrl"
             :mine="isMine(m)"
           />
         </div>
       </ScrollArea>
+
+      <p
+        v-if="peerIsTyping"
+        class="px-4 pb-1 text-xs text-muted-foreground animate-pulse"
+        aria-live="polite"
+      >
+        {{ peerName }} esta digitando...
+      </p>
 
       <Separator />
 
@@ -67,6 +82,7 @@
           autocomplete="off"
           rows="1"
           class="max-h-32 min-h-10 flex-1 resize-none"
+          @input="onDraftInput"
           @keydown.enter.exact.prevent="enviar"
         />
         <Button
@@ -122,6 +138,8 @@ const peerName = computed(() => {
   const name = route.query.name
   return typeof name === 'string' && name.length > 0 ? name : 'Usuario'
 })
+const peerAvatarUrl = computed(() => chat.avatarOf(peerId.value))
+const peerIsTyping = computed(() => chat.isPeerTyping(peerId.value))
 
 const messages = ref<ChatMessage[]>([])
 const draft = ref('')
@@ -130,6 +148,8 @@ const sending = ref(false)
 const error = ref('')
 const scroller = ref<HTMLElement | null>(null)
 let off: (() => void) | null = null
+let typingIdleTimer: ReturnType<typeof setTimeout> | null = null
+let lastTypingSent = false
 
 function isMine(m: ChatMessage) {
   return String(m.fromUserId).toLowerCase() === String(auth.userId).toLowerCase()
@@ -156,10 +176,45 @@ async function scrollBottom() {
   if (scroller.value) scroller.value.scrollTop = scroller.value.scrollHeight
 }
 
+function clearTypingTimers() {
+  if (typingIdleTimer) {
+    clearTimeout(typingIdleTimer)
+    typingIdleTimer = null
+  }
+}
+
+async function sendTyping(isTyping: boolean) {
+  if (lastTypingSent === isTyping) return
+  lastTypingSent = isTyping
+  await chat.notifyTyping(peerId.value, isTyping)
+}
+
+function onDraftInput() {
+  const hasText = draft.value.trim().length > 0
+  if (!hasText) {
+    clearTypingTimers()
+    void sendTyping(false)
+    return
+  }
+
+  void sendTyping(true)
+  clearTypingTimers()
+  typingIdleTimer = setTimeout(() => {
+    void sendTyping(false)
+  }, 1500)
+}
+
+async function voltar() {
+  clearTypingTimers()
+  await sendTyping(false)
+  await router.push('/users')
+}
+
 onMounted(async () => {
   chat.setActivePeer(peerId.value)
   try {
     await chat.connect()
+    await chat.refreshDirectory()
     messages.value = await chat.loadHistory(peerId.value)
   } catch {
     error.value = 'Falha ao carregar histórico.'
@@ -178,9 +233,13 @@ onMounted(async () => {
 
 watch(peerId, (id) => {
   chat.setActivePeer(id)
+  clearTypingTimers()
+  lastTypingSent = false
 })
 
 onUnmounted(() => {
+  clearTypingTimers()
+  void sendTyping(false)
   chat.setActivePeer(null)
   if (off) off()
 })
@@ -190,9 +249,11 @@ async function enviar() {
   if (!text) return
   sending.value = true
   error.value = ''
+  clearTypingTimers()
   try {
     await chat.sendMessage(peerId.value, peerName.value, text)
     draft.value = ''
+    lastTypingSent = false
   } catch (e: unknown) {
     error.value = e instanceof Error ? e.message : 'Erro ao enviar.'
   } finally {

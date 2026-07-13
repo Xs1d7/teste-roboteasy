@@ -87,6 +87,18 @@ public class ChatHub(
         });
     }
 
+    /// <summary>Ephemeral: notifica o peer que o usuario esta digitando (sem Rabbit/Mongo).</summary>
+    public Task Typing(Guid toUserId, bool isTyping)
+    {
+        var from = CurrentUser() ?? throw new HubException("nao autenticado");
+        return Clients.User(toUserId.ToString()).SendAsync("UserTyping", new
+        {
+            userId = from.UserId,
+            username = from.Username,
+            isTyping
+        });
+    }
+
     private OnlineUser? CurrentUser()
     {
         var id = Context.User?.FindFirstValue(ClaimTypes.NameIdentifier)

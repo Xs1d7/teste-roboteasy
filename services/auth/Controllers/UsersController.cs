@@ -33,7 +33,10 @@ public class UsersController(
     {
         var list = await db.Users
             .OrderBy(u => u.Username)
-            .Select(u => new UserDto(u.Id, u.Username))
+            .Select(u => new UserDto(
+                u.Id,
+                u.Username,
+                u.AvatarKey == null ? null : "/api/users/avatar/" + u.AvatarKey))
             .ToListAsync();
 
         return Ok(list);

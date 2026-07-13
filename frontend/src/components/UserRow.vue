@@ -10,6 +10,7 @@
       @click="$emit('select')"
     >
       <Avatar size="default" class="size-10">
+        <AvatarImage v-if="avatarUrl" :src="avatarUrl" :alt="username" />
         <AvatarFallback class="bg-secondary text-sm font-semibold text-secondary-foreground">
           {{ initials(username) }}
         </AvatarFallback>
@@ -58,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { Avatar, AvatarBadge, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarBadge, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { initials } from '@/lib/initials'
 import { cn } from '@/lib/utils'
@@ -66,10 +67,11 @@ import { cn } from '@/lib/utils'
 withDefaults(
   defineProps<{
     username: string
+    avatarUrl?: string | null
     unread?: number
     preview?: string
   }>(),
-  { unread: 0, preview: '' }
+  { avatarUrl: null, unread: 0, preview: '' }
 )
 defineEmits<{ select: [] }>()
 </script>

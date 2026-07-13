@@ -85,7 +85,7 @@
               variant="outline"
               size="sm"
               type="button"
-              @click="chat.refreshOnline()"
+              @click="atualizar"
             >
               <RefreshCw />
               Atualizar
@@ -120,6 +120,7 @@
             v-for="u in others"
             :key="u.userId"
             :username="u.username"
+            :avatar-url="u.avatarUrl ?? chat.avatarOf(u.userId)"
             :unread="chat.unreadCount(u.userId)"
             :preview="chat.lastPreview(u.userId)"
             @select="abrir(u)"
@@ -186,6 +187,7 @@ async function onAvatarChange(event: Event) {
   avatarHint.value = ''
   try {
     await auth.uploadAvatar(file)
+    await chat.refreshDirectory()
     avatarHint.value = 'Foto de perfil atualizada.'
     avatarHintWarn.value = false
   } catch (e: unknown) {
@@ -245,6 +247,11 @@ async function pedirNotificacoes() {
     notifHint.value = 'Este navegador nao suporta Notification API.'
     notifHintWarn.value = true
   }
+}
+
+async function atualizar() {
+  await chat.refreshDirectory()
+  await chat.refreshOnline()
 }
 
 function abrir(u: OnlineUser) {

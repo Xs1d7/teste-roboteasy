@@ -2,6 +2,7 @@
   <Message :align="mine ? 'end' : 'start'" class="animate-in fade-in slide-in-from-bottom-1 duration-200">
     <MessageAvatar v-if="!mine">
       <Avatar size="sm" class="size-8">
+        <AvatarImage v-if="avatarUrl" :src="avatarUrl" :alt="author" />
         <AvatarFallback class="bg-secondary text-[0.65rem] font-semibold">
           {{ initials(author) }}
         </AvatarFallback>
@@ -22,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Bubble, BubbleContent } from '@/components/ui/bubble'
 import {
   Message,
@@ -37,8 +38,9 @@ withDefaults(
     content: string
     time: string
     author?: string
+    avatarUrl?: string | null
     mine?: boolean
   }>(),
-  { author: '?', mine: false }
+  { author: '?', avatarUrl: null, mine: false }
 )
 </script>
