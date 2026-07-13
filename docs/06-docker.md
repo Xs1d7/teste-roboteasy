@@ -29,7 +29,8 @@ Healthchecks: Auth, chat-a e chat-b precisam ficar healthy antes do frontend.
 
 1. **Sticky (`ip_hash`)** — o mesmo browser tende a cair sempre no mesmo pod (WebSocket estavel)
 2. **Redis backplane** — se A esta no `chat-a` e B no `chat-b`, `Clients.User` ainda funciona entre pods
-3. **Presenca no Redis + TTL** — lista online compartilhada; pod morto some em ~60s (heartbeat a cada 20s)
+3. **Fila RabbitMQ compartilhada** (`chat.events.workers`) — as replicas competem no consumo; so uma entrega `ReceiveMessage` (evita badge de nao lidas +2)
+4. **Presenca no Redis + TTL** — lista online compartilhada; pod morto some em ~60s (heartbeat a cada 20s)
 
 Mais contexto: [README raiz](../README.md#escala-horizontal--ponto-critico-que-identifiquei).
 

@@ -14,14 +14,19 @@ public class EventConsumer(
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        // Fila nomeada compartilhada (nao exclusive): com chat-a + chat-b, so um
+        // consumidor processa cada evento. Com Redis backplane, Clients.User ainda
+        // chega na conexao certa. Filas exclusive por instancia = ReceiveMessage x2
+        // e badge de nao lidas saltando de 2 em 2.
         var queue = await bus.Channel.QueueDeclareAsync(
-            queue: string.Empty,
+            queue: EventBus.WorkerQueueName,
             durable: false,
-            exclusive: true,
-            autoDelete: true,
+            exclusive: false,
+            autoDelete: false,
             cancellationToken: stoppingToken);
 
         await bus.Channel.QueueBindAsync(queue.QueueName, EventBus.ExchangeName, string.Empty, cancellationToken: stoppingToken);
+        await bus.Channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 10, global: false, cancellationToken: stoppingToken);
 
         var consumer = new AsyncEventingBasicConsumer(bus.Channel);
         consumer.ReceivedAsync += async (_, args) =>
@@ -55,7 +60,7 @@ public class EventConsumer(
         };
 
         await bus.Channel.BasicConsumeAsync(queue.QueueName, autoAck: true, consumer, stoppingToken);
-        logger.LogInformation("consumindo fila {Queue}", queue.QueueName);
+        logger.LogInformation("consumindo fila compartilhada {Queue}", queue.QueueName);
 
         try { await Task.Delay(Timeout.Infinite, stoppingToken); }
         catch (OperationCanceledException) { }

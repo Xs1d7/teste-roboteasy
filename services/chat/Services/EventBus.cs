@@ -8,6 +8,8 @@ namespace Chat.Api.Services;
 public class EventBus : IAsyncDisposable
 {
     public const string ExchangeName = "chat.events";
+    /// <summary>Fila compartilhada: chat-a/chat-b competem — um evento, um delivery SignalR.</summary>
+    public const string WorkerQueueName = "chat.events.workers";
 
     private readonly IConnection _connection;
     private readonly IChannel _channel;

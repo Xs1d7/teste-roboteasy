@@ -24,6 +24,8 @@ export const useChatStore = defineStore('chat', () => {
   const unreadByUser = ref<Record<string, number>>({})
   /** Ultima mensagem recebida (preview na lista). */
   const lastPreviewByUser = ref<Record<string, string>>({})
+  /** Evita badge +2 se o hub entregar o mesmo id mais de uma vez. */
+  const seenIncomingIds = new Set<string>()
   const notificationPermission = ref(currentPermission())
 
   const totalUnread = computed(() =>
@@ -60,6 +62,16 @@ export const useChatStore = defineStore('chat', () => {
   function registerIncoming(msg: ChatMessage) {
     const auth = useAuthStore()
     if (!auth.userId) return
+
+    const msgId = String(msg.id ?? '')
+    if (msgId) {
+      if (seenIncomingIds.has(msgId)) return
+      seenIncomingIds.add(msgId)
+      if (seenIncomingIds.size > 500) {
+        const first = seenIncomingIds.values().next().value
+        if (first) seenIncomingIds.delete(first)
+      }
+    }
 
     const me = normId(auth.userId)
     const from = normId(msg.fromUserId)
@@ -175,6 +187,7 @@ export const useChatStore = defineStore('chat', () => {
     activePeerId.value = null
     unreadByUser.value = {}
     lastPreviewByUser.value = {}
+    seenIncomingIds.clear()
     syncDocumentTitle()
   }
 
