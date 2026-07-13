@@ -23,7 +23,7 @@
       <CardHeader class="border-b border-border/60 pb-4">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <CardTitle class="font-heading flex items-center gap-2 text-lg">
-            Usuarios disponiveis
+            usuários disponiveis
             <Badge v-if="chat.totalUnread > 0" class="h-5 min-w-5 justify-center px-1.5">
               {{ chat.totalUnread }}
             </Badge>

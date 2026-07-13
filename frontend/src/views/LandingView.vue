@@ -7,7 +7,7 @@
           <RouterLink to="/login">Entrar</RouterLink>
         </Button>
         <Button as-child size="sm">
-          <RouterLink to="/login">Comecar gratis</RouterLink>
+          <RouterLink to="/login">Começar grátis</RouterLink>
         </Button>
       </nav>
     </header>
@@ -23,7 +23,7 @@
           Mensagens em tempo real,<br />sem atrito.
         </h1>
         <p class="mb-7 max-w-md text-[clamp(1.02rem,1.6vw,1.2rem)] leading-relaxed text-muted-foreground">
-          Roboteasy conecta sua equipe em conversas diretas, com historico seguro e presencia ao vivo.
+          Roboteasy conecta sua equipe em conversas diretas, com histórico seguro e presencia ao vivo.
         </p>
         <div class="flex flex-wrap gap-3">
           <Button as-child size="lg">
@@ -56,7 +56,7 @@
         Feito para conversa direta
       </h2>
       <p class="mb-8 max-w-lg text-muted-foreground leading-relaxed">
-        Cadastro rapido, usuarios online e mensagens instantaneas — o essencial de um messenger moderno.
+        Cadastro rápido, usuários online e mensagens instantâneas — o essencial de um messenger moderno.
       </p>
       <ul class="grid gap-5">
         <li
@@ -84,11 +84,11 @@ import { Button } from '@/components/ui/button'
 
 const points = [
   {
-    title: 'Presenca ao vivo',
-    body: 'Veja quem esta disponivel e inicie o chat em um clique.'
+    title: 'Presença ao vivo',
+    body: 'Veja quem esta disponível e inicie o chat em um clique.'
   },
   {
-    title: 'Historico persistente',
+    title: 'Histórico persistente',
     body: 'Volte depois e continue de onde parou.'
   },
   {

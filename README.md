@@ -14,7 +14,7 @@ Auth JWT, usuarios online, mensagens via SignalR e historico no Mongo. Dois serv
 
 | Landing | Usuarios online | Conversa | Nao lidas |
 |---------|-----------------|----------|-----------|
-| ![Landing](docs/screenshots/site-presentation.png) | ![Online](docs/screenshots/available-users.png) | ![Chat](docs/screenshots/chat.png) | ![Notificacoes](docs/screenshots/notification.png) |
+| ![Landing](docs/screenshots/site-presentation.png) | ![Online](docs/screenshots/available-users.png) | ![Chat](docs/screenshots/chat.png) |
 
 ## Rodar em 1 comando
 

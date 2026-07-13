@@ -28,8 +28,6 @@ Historico carregado do Mongo + envio em tempo real.
 
 Com o site aberto na lista (sem chat aberto), novas mensagens aparecem com badge, preview e destaque no usuario.
 
-![Nao lidas / notificacoes](screenshots/notification.png)
-
 ## O que foi entregue
 
 | Requisito | Como foi feito |

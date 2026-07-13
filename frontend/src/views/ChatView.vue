@@ -31,7 +31,7 @@
         <div ref="scroller" class="flex max-h-[calc(70vh-5.5rem)] flex-col gap-3 overflow-y-auto p-4">
           <Empty v-if="loading" class="border-0 py-10">
             <EmptyHeader>
-              <EmptyDescription>Carregando historico...</EmptyDescription>
+              <EmptyDescription>Carregando histórico...</EmptyDescription>
             </EmptyHeader>
           </Empty>
 
@@ -41,7 +41,7 @@
                 <MessageSquare />
               </EmptyMedia>
               <EmptyTitle>Nenhuma mensagem ainda</EmptyTitle>
-              <EmptyDescription>Manda um oi para comecar a conversa.</EmptyDescription>
+              <EmptyDescription>Manda um oi para Começar a conversa.</EmptyDescription>
             </EmptyHeader>
           </Empty>
 
@@ -161,7 +161,7 @@ onMounted(async () => {
     await chat.connect()
     messages.value = await chat.loadHistory(peerId.value)
   } catch {
-    error.value = 'Falha ao carregar historico.'
+    error.value = 'Falha ao carregar histórico.'
   } finally {
     loading.value = false
     await scrollBottom()
