@@ -76,4 +76,4 @@ Auth e Frontend escalam horizontalmente sem mudanca de codigo.
 - [`infra/aws/sticky-alb.example.tf`](aws/sticky-alb.example.tf)
 - [`infra/gcp/sticky-lb.example.tf`](gcp/sticky-lb.example.tf)
 
-Detalhe: [docs/02-arquitetura.md](../docs/02-arquitetura.md#escala-horizontal--ponto-critico).
+Mais contexto: [README raiz](../README.md#escala-horizontal--ponto-critico-que-identifiquei) e [docs/06-docker.md](../docs/06-docker.md).

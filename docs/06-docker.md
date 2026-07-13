@@ -29,7 +29,7 @@ Healthchecks: Auth, chat-a e chat-b precisam ficar healthy antes do frontend.
 2. **Redis backplane** — se A esta no `chat-a` e B no `chat-b`, `Clients.User` ainda funciona entre pods
 3. **Presenca no Redis + TTL** — lista online compartilhada; pod morto some em ~60s (heartbeat a cada 20s)
 
-Detalhe: [02-arquitetura.md](02-arquitetura.md#escala-horizontal--ponto-critico).
+Mais contexto: [README raiz](../README.md#escala-horizontal--ponto-critico-que-identifiquei).
 
 ## Teste rapido
 

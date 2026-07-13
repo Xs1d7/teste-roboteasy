@@ -30,13 +30,12 @@ Backend pode ser .NET ou Spring. Fui de **.NET** porque ja e o stack que quero m
 - Notificacoes push
 - Testes e2e pesados
 
-## Criterios que de avaliação
+## Criterios de avaliacao
 
 Codigo organizado, boas praticas, seguranca no auth, WebSocket certo, banco ok, README claro.
 
-Entao o desenho precisa mostrar **separacao de responsabilidade** e **motivo** de cada escolha — nao so "funcionou na minha maquina".
-
+O desenho precisa mostrar separacao de responsabilidade e motivo de cada escolha — nao so "funcionou na minha maquina".
 
 ## Arquitetura
 
-Deixei a arquitetura salva no seguinte arquivo [Diagrama](.\roboteasy-diagram.excalidraw). Para visualizar, abra o site [Excalidraw](https://excalidraw.com/) e importe o arquivo. Além disso, irei criar um arquivo mais explicativo do que pensei para essa aplicação. Este se chamará [02-arquitetura](./02-arquitetura.md)
+Diagrama: [roboteasy-diagram.excalidraw](./roboteasy-diagram.excalidraw) — importar no [Excalidraw](https://excalidraw.com/).

@@ -40,7 +40,7 @@ Com o site aberto na lista (sem chat aberto), novas mensagens aparecem com badge
 | Historico | MongoDB, filtro por par de usuarios |
 | Frontend Vue (3 telas) | Login, lista online, conversa (+ landing) |
 | Mensagens nao lidas | Badge + preview na lista; titulo `(N) Roboteasy`; Notification API opcional |
-| Escala do Chat | nginx `ip_hash` (sticky) + Redis; ver [02-arquitetura.md](02-arquitetura.md#escala-horizontal--ponto-critico) |
+| Escala do Chat | nginx `ip_hash` (sticky) + Redis; ver [06-docker.md](06-docker.md) |
 | Docker | `docker compose up --build` sobe tudo (inclui redis + 2 chats) |
 
 ## Stack
@@ -64,14 +64,13 @@ Vue 3 + TS  --HTTP-->  Auth (.NET)  --> PostgreSQL
 
 nginx faz sticky (`ip_hash`) entre as duas replicas do Chat.
 
-Diagrama detalhado: [roboteasy-diagram.excalidraw](roboteasy-diagram.excalidraw) (abrir no [Excalidraw](https://excalidraw.com/)).
+Diagrama: [roboteasy-diagram.excalidraw](roboteasy-diagram.excalidraw) (abrir no [Excalidraw](https://excalidraw.com/)).
 
-**Escala:** Auth/FE horizontais; Chat + SignalR usa **Redis** (backplane + presenca) — ver [02-arquitetura.md](02-arquitetura.md#escala-horizontal--ponto-critico).
+Escala do Chat (Redis, 2 replicas, sticky): [06-docker.md](06-docker.md) e a secao no [README raiz](../README.md#escala-horizontal--ponto-critico-que-identifiquei).
 
 Documentacao do processo:
 
 - [Entendimento](01-entendimento.md)
-- [Arquitetura](02-arquitetura.md)
 - [Auth](03-auth.md) · [Chat](04-chat.md) · [Frontend](05-frontend.md) · [Docker](06-docker.md) · [Testes](testes.md)
 - [Evolucao com IA](07-evolucao-ia.md) — visao de arquiteto (nao implementado)
 - [Deploy Terraform](../infra/README.md) — GCP (Compute Engine) e AWS (EC2)

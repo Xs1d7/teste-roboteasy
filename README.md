@@ -85,4 +85,4 @@ O gargalo e o **Chat + SignalR**. Sem store compartilhado, presenca e conexoes W
 | **Sticky** | nginx `ip_hash` (local); exemplos ALB / Cloud LB em `infra/` |
 | **RabbitMQ** | publish/consume entre qualquer replica |
 
-Detalhe: [docs/02-arquitetura.md](docs/02-arquitetura.md#escala-horizontal--ponto-critico).
+Resumo no compose: [docs/06-docker.md](docs/06-docker.md).

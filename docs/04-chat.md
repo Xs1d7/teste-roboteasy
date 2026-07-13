@@ -48,4 +48,4 @@ Compose sobe **duas replicas** (`chat-a`, `chat-b`); nginx faz **sticky** com `i
 
 Sem Redis: fallback `PresenceTracker` in-memory.
 
-Ver [02-arquitetura.md](02-arquitetura.md#escala-horizontal--ponto-critico).
+Ver tambem [06-docker.md](06-docker.md) e o README raiz (secao de escala).

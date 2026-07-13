@@ -23,11 +23,6 @@ npm-debug.log*
 
 *.log
 
-# Planos / notas locais (nao sobem no PR)
-plano-local.md
-*.local.md
-.local/
-
 # Terraform
 **/.terraform/
 **/*.tfstate
