@@ -32,6 +32,7 @@ jobs:
         run: |
           dotnet restore services/auth/Auth.Api.csproj
           dotnet restore services/chat/Chat.Api.csproj
+          dotnet restore tests/Auth.Api.Tests/Auth.Api.Tests.csproj
           dotnet restore tests/Chat.Api.Tests/Chat.Api.Tests.csproj
 
       - name: Build Auth
@@ -40,7 +41,10 @@ jobs:
       - name: Build Chat
         run: dotnet build services/chat/Chat.Api.csproj --no-restore -c Release
 
-      - name: Test
+      - name: Test Auth
+        run: dotnet test tests/Auth.Api.Tests --no-restore -c Release -v minimal
+
+      - name: Test Chat
         run: dotnet test tests/Chat.Api.Tests --no-restore -c Release -v minimal
 
   frontend:

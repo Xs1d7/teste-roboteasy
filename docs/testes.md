@@ -1,16 +1,34 @@
 # Testes
 
-Projeto: `tests/Chat.Api.Tests` (xUnit).
+Projetos xUnit:
+
+| Projeto | Foco |
+|---------|------|
+| `tests/Auth.Api.Tests` | Register, login, conflito de username (EF InMemory) |
+| `tests/Chat.Api.Tests` | Serializacao Guid, presenca, MessageStore (Mongo opcional) |
 
 ## Rodar tudo (unitarios)
 
-Nao precisa de Mongo — os testes de integracao pulam sozinhos se a URL nao existir.
+Nao precisa de Postgres nem Mongo — Auth usa InMemory; integracao Chat com Mongo pula sozinha se a URL nao existir.
 
 ```bash
+dotnet test tests/Auth.Api.Tests
 dotnet test tests/Chat.Api.Tests
 ```
 
-## Com integracao Mongo (MessageStore)
+## Auth
+
+Cobre o `AuthController` direto (sem subir HTTP):
+
+| Teste | Esperado |
+|-------|----------|
+| Register valido | 200 + JWT |
+| Username duplicado | 409 Conflict |
+| Login ok | 200 + JWT |
+| Senha errada | 401 |
+| Username curto | 400 |
+
+## Chat — com integracao Mongo (MessageStore)
 
 1. Suba o Mongo:
 
@@ -40,7 +58,7 @@ Copie `.env.example` para `.env` e ajuste. O `.env` nao sobe no git; use-o so na
 
 > O `dotnet test` **nao le `.env` sozinho**. A variavel precisa estar no shell ou no CI (GitHub Actions).
 
-## O que cada teste cobre
+## O que cada teste Chat cobre
 
 | Arquivo | Tipo | Depende de Mongo? |
 |---------|------|-------------------|
@@ -52,4 +70,4 @@ Se `MONGO_TEST_URL` nao estiver setada, `MessageStoreTests` retorna sem falhar (
 
 ## CI
 
-No GitHub Actions (`.github/workflows/ci.yml`), o job sobe service `mongo:7` e exporta `MONGO_TEST_URL` antes do `dotnet test`.
+No GitHub Actions (`.github/workflows/ci.yml`), o job restaura/builda Auth e Chat, roda `Auth.Api.Tests` e `Chat.Api.Tests` (com service `mongo:7` + `MONGO_TEST_URL`).

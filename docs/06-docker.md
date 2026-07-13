@@ -3,8 +3,10 @@
 Um comando sobe tudo: infra + auth + **duas replicas do Chat** + frontend (nginx).
 
 ```bash
-docker compose up --build
+docker compose up --build -d --remove-orphans
 ```
+
+`--remove-orphans` limpa containers antigos fora do compose atual (ex.: o servico `chat` unico antes de `chat-a`/`chat-b`).
 
 App: http://localhost:8080  
 Swagger Auth: http://localhost:5001/swagger  

@@ -119,7 +119,7 @@ Vite em http://localhost:5173 (proxy para as APIs).
 
 ## CI
 
-Workflow: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) — build .NET, testes (Mongo no job) e build do frontend.
+Workflow: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) — build .NET, testes Auth + Chat (Mongo no job) e build do frontend.
 
 Comandos locais equivalentes: ver [README raiz](../README.md#ci).
 
