@@ -97,7 +97,7 @@ RabbitMQ management (opcional): http://localhost:15672 — `guest` / `guest`
 Infra only:
 
 ```bash
-docker compose up postgres mongo rabbitmq -d
+docker compose up postgres mongo rabbitmq redis -d
 ```
 
 APIs:
