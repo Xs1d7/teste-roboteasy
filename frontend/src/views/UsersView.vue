@@ -1,14 +1,44 @@
 <template>
   <AppShell title="Roboteasy" :subtitle="subtitle">
     <template #leading>
-      <Avatar size="default" class="size-10">
-        <AvatarImage v-if="auth.avatarUrl" :src="auth.avatarUrl" :alt="auth.username ?? 'avatar'" />
-        <AvatarFallback class="bg-secondary text-sm font-semibold text-secondary-foreground">
-          {{ initials(auth.username || '?') }}
-        </AvatarFallback>
-      </Avatar>
+      <button
+        type="button"
+        class="group relative shrink-0 rounded-full outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+        :title="auth.avatarUrl ? 'Alterar foto de perfil' : 'Adicionar foto de perfil'"
+        :disabled="avatarLoading"
+        @click="abrirSeletorAvatar"
+      >
+        <Avatar size="default" class="size-10">
+          <AvatarImage v-if="auth.avatarUrl" :src="auth.avatarUrl" :alt="auth.username ?? 'avatar'" />
+          <AvatarFallback class="bg-secondary text-sm font-semibold text-secondary-foreground">
+            {{ initials(auth.username || '?') }}
+          </AvatarFallback>
+        </Avatar>
+        <span
+          class="absolute inset-0 flex items-center justify-center rounded-full bg-black/45 text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+        >
+          <Camera class="size-4" />
+        </span>
+      </button>
+      <input
+        ref="avatarInput"
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/gif"
+        class="sr-only"
+        @change="onAvatarChange"
+      />
     </template>
     <template #trailing>
+      <Button
+        variant="outline"
+        size="sm"
+        type="button"
+        :disabled="avatarLoading"
+        @click="abrirSeletorAvatar"
+      >
+        <Camera />
+        {{ auth.avatarUrl ? 'Alterar foto' : 'Adicionar foto' }}
+      </Button>
       <Badge
         :variant="chat.connected ? 'default' : 'secondary'"
         class="uppercase tracking-wide"
@@ -26,6 +56,10 @@
         Sair
       </Button>
     </template>
+
+    <Alert v-if="avatarHint" :variant="avatarHintWarn ? 'destructive' : 'default'" class="mb-4">
+      <AlertDescription>{{ avatarHint }}</AlertDescription>
+    </Alert>
 
     <Card class="overflow-hidden border-border/80 shadow-xl shadow-black/20">
       <CardHeader class="border-b border-border/60 pb-4">
@@ -99,7 +133,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { Bell, LogOut, RefreshCw, Users } from '@lucide/vue'
+import axios from 'axios'
+import { Bell, Camera, LogOut, RefreshCw, Users } from '@lucide/vue'
 import AppShell from '@/components/AppShell.vue'
 import UserRow from '@/components/UserRow.vue'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -123,7 +158,7 @@ import { initials } from '@/lib/initials'
 import { useAuthStore } from '@/stores/auth'
 import { useChatStore } from '@/stores/chat'
 import { cn } from '@/lib/utils'
-import type { OnlineUser } from '@/types/api'
+import type { ApiErrorBody, OnlineUser } from '@/types/api'
 
 const auth = useAuthStore()
 const chat = useChatStore()
@@ -131,6 +166,39 @@ const router = useRouter()
 
 const notifHint = ref('')
 const notifHintWarn = ref(false)
+const avatarInput = ref<HTMLInputElement | null>(null)
+const avatarLoading = ref(false)
+const avatarHint = ref('')
+const avatarHintWarn = ref(false)
+
+function abrirSeletorAvatar() {
+  avatarHint.value = ''
+  avatarInput.value?.click()
+}
+
+async function onAvatarChange(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  input.value = ''
+  if (!file) return
+
+  avatarLoading.value = true
+  avatarHint.value = ''
+  try {
+    await auth.uploadAvatar(file)
+    avatarHint.value = 'Foto de perfil atualizada.'
+    avatarHintWarn.value = false
+  } catch (e: unknown) {
+    avatarHintWarn.value = true
+    if (axios.isAxiosError<ApiErrorBody>(e)) {
+      avatarHint.value = e.response?.data?.message || 'Nao foi possivel enviar a foto.'
+    } else {
+      avatarHint.value = 'Nao foi possivel enviar a foto.'
+    }
+  } finally {
+    avatarLoading.value = false
+  }
+}
 
 const subtitle = computed(() => {
   const base = `Logado como ${auth.username}`
