@@ -64,7 +64,9 @@ Vue 3 + TS  --HTTP-->  Auth (.NET)  --> PostgreSQL
 
 nginx faz sticky (`ip_hash`) entre as duas replicas do Chat.
 
-Diagrama: [roboteasy-diagram.excalidraw](roboteasy-diagram.excalidraw) (abrir no [Excalidraw](https://excalidraw.com/)).
+Diagrama Excalidraw legado: [roboteasy-diagram.excalidraw](roboteasy-diagram.excalidraw).
+
+Mermaids atualizados (local / AWS / GCP / sequência): [diagrams-mermaid.md](diagrams-mermaid.md) — colar no [Excalidraw](https://excalidraw.com/) (Insert → Mermaid).
 
 Escala do Chat (Redis, 2 replicas, sticky): [06-docker.md](06-docker.md) e a secao no [README raiz](../README.md#escala-horizontal--ponto-critico-que-identifiquei).
 

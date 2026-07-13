@@ -37,6 +37,27 @@ http://localhost:8080
 
 Vue 3 · Tailwind · shadcn-vue · .NET 10 · PostgreSQL · MongoDB · RabbitMQ · Redis · SignalR
 
+## Arquitetura
+
+```mermaid
+flowchart LR
+  Browser[Browser] --> Nginx[nginx]
+
+  Nginx -->|auth| Auth[Auth]
+  Nginx -->|chat / hub| ChatA[chat-a]
+  Nginx -->|chat / hub| ChatB[chat-b]
+
+  Auth --> Postgres[(Postgres)]
+  ChatA --> Mongo[(Mongo)]
+  ChatB --> Mongo
+  ChatA --> Rabbit[(RabbitMQ)]
+  ChatB --> Rabbit
+  ChatA --> Redis[(Redis)]
+  ChatB --> Redis
+```
+
+AWS, GCP e o fluxo de uma mensagem: [docs/diagrams-mermaid.md](docs/diagrams-mermaid.md).
+
 ## Testes
 
 ```bash
