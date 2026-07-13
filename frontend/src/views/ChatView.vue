@@ -18,6 +18,7 @@
     <template #trailing>
       <div class="flex items-center gap-2 text-sm text-muted-foreground">
         <Avatar size="sm" class="size-7">
+          <AvatarImage v-if="auth.avatarUrl" :src="auth.avatarUrl" :alt="auth.username ?? 'avatar'" />
           <AvatarFallback class="bg-secondary text-[0.65rem] font-semibold">
             {{ initials(auth.username || '?') }}
           </AvatarFallback>
@@ -93,7 +94,7 @@ import { ArrowLeft, MessageSquare, SendHorizontal } from '@lucide/vue'
 import AppShell from '@/components/AppShell.vue'
 import MessageBubble from '@/components/MessageBubble.vue'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import {
