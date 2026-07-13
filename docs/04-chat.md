@@ -15,7 +15,9 @@ Mesma chave JWT do Auth.
 dotnet run --project services/chat --urls http://localhost:5002
 ```
 
-Swagger UI (so em Development): http://localhost:5002/swagger
+Swagger UI: http://localhost:5002/swagger
+
+No Docker, `chat-a` publica a porta 5002 com Swagger ligado (`Swagger__Enabled=true`).
 
 ## SignalR (nao coberto pelo Swagger)
 

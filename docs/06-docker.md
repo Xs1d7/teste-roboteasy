@@ -7,6 +7,8 @@ docker compose up --build
 ```
 
 App: http://localhost:8080  
+Swagger Auth: http://localhost:5001/swagger  
+Swagger Chat (`chat-a`): http://localhost:5002/swagger  
 RabbitMQ management (opcional): http://localhost:15672 — `guest` / `guest`
 
 ## O que sobe

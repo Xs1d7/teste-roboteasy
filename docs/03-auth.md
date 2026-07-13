@@ -13,6 +13,8 @@ Rodar local (precisa do Postgres no ar):
 dotnet run --project services/auth --urls http://localhost:5001
 ```
 
-Swagger UI (so em Development): http://localhost:5001/swagger
+Swagger UI: http://localhost:5001/swagger
+
+No Docker Compose tambem fica disponivel (porta publicada + `Swagger__Enabled=true`).
 
 Proximo passo: Chat (SignalR + Mongo + Rabbit).
